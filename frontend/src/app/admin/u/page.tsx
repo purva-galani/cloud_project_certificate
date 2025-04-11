@@ -32,7 +32,6 @@ const columns = [
   { name: "NAME", uid: "name", sortable: true, width: "120px" },
   { name: "EMAIL", uid: "email", sortable: true, width: "120px" },
   { name: "CONTACT", uid: "contact", sortable: true, width: "120px" },
- 
   { name: "ACTIONS", uid: "actions", sortable: false, width: "100px" },
 ];
 

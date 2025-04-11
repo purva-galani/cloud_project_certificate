@@ -1,0 +1,253 @@
+return (
+  <SidebarProvider>
+    <AppSidebar />
+    <SidebarInset>
+      <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-4">
+        <div className="flex items-center gap-2">
+          <SidebarTrigger className="-ml-1" />
+          <ModeToggle />
+          <Separator orientation="vertical" className="mx-1 h-6" />
+          <Breadcrumb className="hidden md:flex">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/dashboard" className="hover:text-primary">
+                  Dashboard
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/admin/u" className="hover:text-primary">
+                  User
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Data</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </header>
+
+      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+        {/* Stats Cards */}
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-semibold">Total Certificates</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="text-3xl font-bold">{certificates.length}</div>
+                <FileDown className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-semibold">Total Services</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="text-3xl font-bold">{services.length}</div>
+                <CalendarIcon className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-semibold">Total Users</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="text-3xl font-bold">{users.length}</div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-6 w-6 text-muted-foreground"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tables Section */}
+        <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">Certificates</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table
+                isHeaderSticky
+                aria-label="Certificates table"
+                bottomContent={bottomContent}
+                bottomContentPlacement="outside"
+                classNames={{
+                  wrapper: "max-h-[400px] overflow-y-auto",
+                }}
+                selectedKeys={selectedKeys}
+                sortDescriptor={sortDescriptor}
+                topContent={topContent}
+                topContentPlacement="outside"
+                onSelectionChange={handleSelectionChange}
+                onSortChange={(descriptor) => {
+                  setSortDescriptor({
+                    column: descriptor.column as string,
+                    direction: descriptor.direction as "ascending" | "descending",
+                  });
+                }}
+              >
+                <TableHeader columns={headerColumns}>
+                  {(column) => (
+                    <TableColumn
+                      key={column.uid}
+                      align={column.uid === "actions" ? "center" : "start"}
+                      allowsSorting={column.sortable}
+                    >
+                      {column.name}
+                    </TableColumn>
+                  )}
+                </TableHeader>
+                <TableBody emptyContent={"No certificates found"} items={sortedItems}>
+                  {(item) => (
+                    <TableRow key={item._id}>
+                      {(columnKey) => (
+                        <TableCell className="py-2 px-4 text-sm">
+                          {renderCell(item as Certificate, columnKey as string)}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+          <Card className="hover:shadow-md transition-shadow">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">Services</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table
+                isHeaderSticky
+                aria-label="Services table"
+                bottomContent={bottomContentservice}
+                bottomContentPlacement="outside"
+                classNames={{
+                  wrapper: "max-h-[400px] overflow-y-auto",
+                }}
+                selectedKeys={selectedKeysService}
+                sortDescriptor={sortDescriptorService}
+                topContent={topContentservice}
+                topContentPlacement="outside"
+                onSelectionChange={handleSelectionChangeservice}
+                onSortChange={(descriptor) => {
+                  setSortDescriptorService({
+                    column: descriptor.column as string,
+                    direction: descriptor.direction as "ascending" | "descending",
+                  });
+                }}
+              >
+                <TableHeader columns={headerColumnsservice}>
+                  {(column) => (
+                    <TableColumn
+                      key={column.uid}
+                      align={column.uid === "actions" ? "center" : "start"}
+                      allowsSorting={column.sortable}
+                    >
+                      {column.name}
+                    </TableColumn>
+                  )}
+                </TableHeader>
+                <TableBody emptyContent={"No services found"} items={sortedItemsservice}>
+                  {(item) => (
+                    <TableRow key={item._id}>
+                      {(columnKey) => (
+                        <TableCell className="py-2 px-4 text-sm">
+                          {renderCellservice(item as Service, columnKey as string)}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </SidebarInset>
+  </SidebarProvider>
+)
+
+import { AppSidebar } from "@/components/app-sidebar"
+import { ModeToggle } from "@/components/ModeToggle"
+import { Breadcrumb, BreadcrumbSeparator, BreadcrumbPage, BreadcrumbList, BreadcrumbLink, BreadcrumbItem } from "@/components/ui/breadcrumb"
+import { Separator } from "@/components/ui/separator"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
+import CertificateTable from "../table/table"
+
+export default async function Page() {
+
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <ModeToggle />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/dashboard">
+                    Dashboard
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Data</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            
+          </div>
+          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
+            <CertificateTable initialData={[]} />
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  )
+}
