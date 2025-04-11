@@ -190,7 +190,7 @@ export function NavUser() {
           }
           } >
           <DialogHeader>
-            <DialogTitle className="text-center">Company Profile</DialogTitle>
+            <DialogTitle className="text-center">Profile Details</DialogTitle>
           </DialogHeader>
           {error ? (
             <div className="text-center text-red-500 py-4">{error}</div>
@@ -210,27 +210,23 @@ export function NavUser() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <CardContent className="space-y-2">
                   <div>
-                    <p className="text-xs text-gray-400">Name</p>
+                    <p className="text-xs text-gray-400">User Name</p>
                     <p>{currentUser.name}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400">Email</p>
+                    <p className="text-xs text-gray-400">Email Address</p>
                     <p>{currentUser.email}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400">Phone</p>
+                    <p className="text-xs text-gray-400">Contact Number</p>
                     <p>{currentUser.contact}</p>
                   </div>
                 </CardContent>
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setOpen(false)}>
-                  Close
-                </Button>
                 <Button onClick={() => handleEditClick(currentUser)}>
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Profile
+                  Update
                 </Button>
               </div>
             </div>
@@ -252,7 +248,7 @@ export function NavUser() {
             e.preventDefault();
           }}>
           <DialogHeader>
-            <DialogTitle>Edit Profile</DialogTitle>
+            <DialogTitle>Update Profile</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -264,7 +260,7 @@ export function NavUser() {
                     <FormItem>
                       <FormLabel>User Name</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="Enter your name"/>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -277,7 +273,7 @@ export function NavUser() {
                     <FormItem>
                       <FormLabel>Email Address</FormLabel>
                       <FormControl>
-                        <Input type="email" {...field} />
+                        <Input type="email" {...field} readOnly/>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -290,7 +286,7 @@ export function NavUser() {
                     <FormItem>
                       <FormLabel>Contact Number</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} />
+                        <Input type="number" {...field} placeholder="Enter your contact number"/>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -298,9 +294,6 @@ export function NavUser() {
                 />
               </div>
               <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" onClick={() => setIsEditing(false)}>
-                  Cancel
-                </Button>
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? (
                     <>
@@ -308,7 +301,7 @@ export function NavUser() {
                       Saving...
                     </>
                   ) : (
-                    "Save Changes"
+                    "Update"
                   )}
                 </Button>
               </div>

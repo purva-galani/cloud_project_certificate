@@ -1,33 +1,14 @@
 "use client"
-
 import * as React from "react"
 import { usePathname } from "next/navigation"
-import { AudioWaveform, CirclePlay, Command, File, GalleryVerticalEnd, Settings } from "lucide-react"
-
-import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
+import { NavMain } from "@/components/nav-main"
+import { CirclePlay, File, InfoIcon } from "lucide-react"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarRail } from "@/components/ui/sidebar"
 
-
-const data = {
-  user: {
-    name: "User",
-    email: "",
-    avatar: "",
-  },
-  teams: [
-    {
-      name: "Spriers",
-      logoUrl: "/img/karmen-loh.jpg",
-      plan: "Enterprise",
-    }
-  ],
-}
-
+const data = {}
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname()
-
   const navMain = React.useMemo(
     () => [
       {
@@ -36,12 +17,31 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: CirclePlay,
         items: [
           {
-            title: "Certificate Table",
-            url: "/certificateTable",
+            title: "Dashboard",
+            url: "/user/dashboard",
+          },
+        ],
+      },
+      {
+        title: "Company Details",
+        url: "#",
+        icon: InfoIcon,
+        items: [
+          {
+            title: "Create Company",
+            url: "/user/companyform",
           },
           {
-            title: "Service Table",
-            url: "/serviceTable",
+            title: "Company Record",
+            url: "/user/companyrecord",
+          },
+          {
+            title: "Create Contact",
+            url: "/user/contactform",
+          },
+          {
+            title: "Contact Record",
+            url: "/user/contactrecord",
           },
         ],
       },
@@ -51,27 +51,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: File,
         items: [
           {
-            title: "Certificate",
-            url: "/certificate",
+            title: "Create Certificate",
+            url: "/user/certificateform",
           },
           {
-            title: "Service",
-            url: "/service",
-          },
-        ],
-      },
-      {
-        title: "Settings",
-        url: "#",
-        icon: Settings,
-        items: [
-          {
-            title: "General",
-            url: "#",
+            title: "Certificate Record",
+            url: "/user/certificaterecord",
           },
           {
-            title: "Team",
-            url: "#",
+            title: "Create Service",
+            url: "/user/serviceform",
+          },
+          {
+            title: "Service Record",
+            url: "/user/servicerecord",
           },
         ],
       },
@@ -81,9 +74,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
       </SidebarContent>

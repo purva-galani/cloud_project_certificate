@@ -155,51 +155,45 @@ const updateUser = async (req, res) => {
   }
 };
 
-
 const login = async (req, res) => {
   const { email, password } = req.body;
-
-  console.log('Login attempt with email:', email);
 
   // Validate input
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
   }
 
-  const JWT_SECRET = process.env.JWT_SECRET || "randome#certificate";
-
-  if (loggedInUsersCount >= MAX_LOGINS) {
-    return res.status(403).json({ message: 'You have reached the login limit. Try again later.' });
-  }
-
   try {
-
     const normalizedEmail = email.toLowerCase();
-
     const user = await Users.findOne({ email: normalizedEmail });
 
     if (!user) {
-      console.log('User not found with email:', normalizedEmail);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      console.log('Invalid password for user:', normalizedEmail);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT tokens
-    const accessToken = jwt.sign({ userId: user._id }, JWT_SECRET);
-    const refreshToken = jwt.sign({ userId: user._id }, JWT_SECRET);
+    // Token generation with expiration
+    const accessToken = jwt.sign(
+      { userId: user._id , role: 'user' },
+      process.env.JWT_SECRET || "randome#certificate",
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
 
-    // Store the refresh token in the user record
+    const refreshToken = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_REFRESH_SECRET || "refresh#secret",
+      { expiresIn: '7d' } // Refresh token expires in 7 days
+    );
+
+    // Store refresh token
     user.refreshToken = refreshToken;
     await user.save();
 
-    loggedInUsersCount++;
-
-    // Send the accessToken and refreshToken to the frontend
+    // Return tokens and user data (excluding sensitive info)
     res.json({
       accessToken,
       refreshToken,
@@ -210,31 +204,49 @@ const login = async (req, res) => {
         contact: user.contact
       }
     });
+
   } catch (error) {
-    console.error('Error during login:', error);
-    res.status(500).json({ error: 'Error during login. Please try again.' });
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
 
-
-
 const refreshToken = async (req, res) => {
-  const { token } = req.body;
+  const { refreshToken } = req.body;
 
-  if (!token) return res.sendStatus(401);
+  if (!refreshToken) {
+    return res.status(401).json({ error: 'Refresh token required' });
+  }
 
-  const user = await Users.findOne({ refreshToken: token });
-  if (!user) return res.sendStatus(403);
+  try {
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET || "refresh#secret"
+    );
 
-  jwt.verify(token, process.env.JWT_SECRET, (err) => {
-    if (err) return res.sendStatus(403);
+    const user = await Users.findOne({
+      _id: decoded.userId,
+      refreshToken
+    });
 
-    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-    res.json({ accessToken });
-  });
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid refresh token' });
+    }
+
+    // Generate new access token
+    const newAccessToken = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET || "randome#certificate",
+      { expiresIn: '1h' }
+    );
+
+    res.json({ accessToken: newAccessToken });
+  } catch (error) {
+    console.error('Refresh token error:', error);
+    res.status(401).json({ error: 'Invalid refresh token' });
+  }
 };
-
 const logout = async (req, res) => {
   const { token } = req.body;
 

@@ -88,13 +88,13 @@ export function LoginForm() {
 
       if (userResponse.ok) {
         localStorage.setItem("userId", userData.user.id);
-        localStorage.setItem("authToken", userData.token);
+        localStorage.setItem("authToken", userData.accessToken);
         
         toast({
           title: "Login successful",
           description: "You have logged in successfully",
         });
-        router.push("/dashboard");
+        router.push("/user/dashboard");
         return;
       }
 
@@ -108,7 +108,7 @@ export function LoginForm() {
       const adminData = await adminResponse.json();
 
       if (adminResponse.ok) {
-        localStorage.setItem("authToken", adminData.token);
+        localStorage.setItem("authToken", adminData.accessToken);
         localStorage.setItem("adminId", adminData.adminId);
         localStorage.setItem("adminEmail", adminData.email);
 
@@ -116,7 +116,7 @@ export function LoginForm() {
           title: "Admin login successful",
           description: "You have logged in as admin",
         });
-        router.push("/admin");
+        router.push("/admin/dashboard");
         return;
       }
 

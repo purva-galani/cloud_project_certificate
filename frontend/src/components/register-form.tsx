@@ -202,13 +202,13 @@ export function RegisterForm() {
     <Card className="w-[400px]">
       <CardHeader>
         <CardTitle style={{ textAlign: "center" }}>Register</CardTitle>
-        <CardDescription style={{ textAlign: "center" }}>Create a new account.</CardDescription>
+        <CardDescription style={{ textAlign: "center" }}>Create a new account</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid w-full items-center gap-4">
           {/* Name Input */}
           <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">User Name</Label>
             <Input
               name="name"
               placeholder="Enter your name"
@@ -221,11 +221,11 @@ export function RegisterForm() {
 
           {/* Email Input */}
           <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Email Address</Label>
             <Input
               name="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="Enter your email address"
               value={formData.email}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -235,7 +235,7 @@ export function RegisterForm() {
 
           {/* Contact Input */}
           <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="contact">Contact</Label>
+            <Label htmlFor="contact">Contact Number</Label>
             <Input
               name="contact"
               type="tel"

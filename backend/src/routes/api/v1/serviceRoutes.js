@@ -1,5 +1,7 @@
 const express = require("express");
 const { ServiceController } = require("../../../controller");
+const authenticate = require('../../../middleware/auth');
+const { sendCertificateNotification } = require('../../../controller/serviceController');
 
 const router = express.Router();
 
@@ -33,6 +35,6 @@ router.get("/getServiceById/:serviceId",
     ServiceController.getServiceById);
 
 
-    router.post("/sendMail",ServiceController.sendCertificateNotification)
+    router.post('/sendMail', authenticate, sendCertificateNotification);
 
     module.exports = router;

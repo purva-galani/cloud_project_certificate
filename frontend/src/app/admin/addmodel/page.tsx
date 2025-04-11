@@ -4,8 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Trash2 } from "lucide-react"; // Import trash icon
-import { AppSidebar } from "../adminComponents/page";
+import { AdminSidebar } from "@/components/admin-sidebar";
+import { ModeToggle } from "@/components/ModeToggle";
 
 interface Observation {
     gas: string;
@@ -73,41 +73,41 @@ export default function AddModel() {
 
     const handleAddServiceEngineer = async () => {
         if (newServiceEngineer) {
-          setLoading(true);
-          try {
-            const response = await fetch("http://localhost:5000/api/v1/ServiceEngineer/addServiceEngineer", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ name: newServiceEngineer }),
-            });
-      
-            // Check if response is JSON
-            const contentType = response.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-              throw new Error("Server did not return JSON");
+            setLoading(true);
+            try {
+                const response = await fetch("http://localhost:5000/api/v1/ServiceEngineer/addServiceEngineer", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ name: newServiceEngineer }),
+                });
+
+                // Check if response is JSON
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("Server did not return JSON");
+                }
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || "Failed to add service engineer");
+                }
+
+                setServiceEngineers([...serviceEngineers, { name: newServiceEngineer, id: result.id }]);
+                setNewServiceEngineer("");
+                alert("Service engineer added successfully");
+            } catch (error) {
+                console.error("Error adding service engineer:", error);
+                alert(error.message || "Failed to add service engineer. Check console for details.");
+            } finally {
+                setLoading(false);
             }
-      
-            const result = await response.json();
-            
-            if (!response.ok) {
-              throw new Error(result.error || "Failed to add service engineer");
-            }
-      
-            setServiceEngineers([...serviceEngineers, { name: newServiceEngineer, id: result.id }]);
-            setNewServiceEngineer("");
-            alert("Service engineer added successfully");
-          } catch (error) {
-            console.error("Error adding service engineer:", error);
-            alert(error.message || "Failed to add service engineer. Check console for details.");
-          } finally {
-            setLoading(false);
-          }
         } else {
-          alert("Please enter a service engineer name.");
+            alert("Please enter a service engineer name.");
         }
-      };
+    };
 
 
     useEffect(() => {
@@ -269,27 +269,24 @@ export default function AddModel() {
 
     return (
         <SidebarProvider>
-            <AppSidebar />
+            <AdminSidebar />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
+                        <ModeToggle />
                         <Separator orientation="vertical" className="mr-2 h-4" />
                         <Breadcrumb>
                             <BreadcrumbList>
-                                <BreadcrumbItem className="hidden md:block">
-                                    <BreadcrumbLink href="add-model">model</BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="hidden md:block" />
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink href="addcategory">
-                                        <BreadcrumbPage>Admin Certificate</BreadcrumbPage>
+                                    <BreadcrumbLink href="/admin/dashboard">
+                                        <BreadcrumbPage>Dashboard</BreadcrumbPage>
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator className="hidden md:block" />
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink href="adminservice">
-                                        <BreadcrumbPage>Admin Service</BreadcrumbPage>
+                                    <BreadcrumbLink href="#">
+                                        <BreadcrumbPage>Create Model</BreadcrumbPage>
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
@@ -299,9 +296,9 @@ export default function AddModel() {
                 <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-15">
                     <Card className="max-w-6xl mx-auto">
                         <CardHeader>
-                            <CardTitle className="text-3xl font-bold text-center">Certificate</CardTitle>
+                            <CardTitle className="text-3xl font-bold text-center">Create Model</CardTitle>
                             <CardDescription className="text-center">
-                                Please fill out the form below to generate a new User.
+                                Fill out the form below to create a new model
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
