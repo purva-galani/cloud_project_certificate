@@ -238,8 +238,8 @@ export default function AdminServiceTable() {
             window.URL.revokeObjectURL(url);
 
             toast({
-                title: "Success",
-                description: "Service downloaded successfully",
+                title: "Download successful!",
+                description: "Service downloaded successfully!",
                 variant: "default",
             });
         } catch (err) {
@@ -410,6 +410,9 @@ export default function AdminServiceTable() {
 
 
     const handleDelete = async (serviceId: string) => {
+        if (!window.confirm("Are you sure you want to delete this company data?")) {
+            return;
+        }
         try {
             console.log("Attempting to delete service ID:", serviceId);
 
@@ -425,8 +428,8 @@ export default function AdminServiceTable() {
             console.log("Delete response:", response.data);
 
             toast({
-                title: "Success",
-                description: response.data.message || "Service deleted successfully",
+                title: "Delete Successful!",
+                description: response.data.message || "Service deleted successfully!",
                 variant: "default",
             });
 
@@ -473,8 +476,6 @@ export default function AdminServiceTable() {
         }
     };
 
-
-
     const renderCell = React.useCallback((service: Service, columnKey: string): React.ReactNode => {
         const cellValue = service[columnKey as keyof Service];
 
@@ -513,7 +514,7 @@ export default function AdminServiceTable() {
                             className="text-lg text-info cursor-pointer active:opacity-50"
                             onClick={(e) => {
                                 e.preventDefault();
-                                router.push(`adminservice?id=${service._id}`);
+                                router.push(`/admin/serviceform?id=${service._id}`);
                             }}
                         >
                             <Edit2Icon className="h-6 w-6" />

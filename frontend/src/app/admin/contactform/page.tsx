@@ -67,7 +67,7 @@ export default function Customer() {
         } catch (error: any) {
           toast({
             title: "Error",
-            description: error.response?.data?.message || "Failed to fetch contact details",
+            description: error.response?.data?.message || "Failed to fetch contact details.",
             variant: "destructive",
           });
           console.error("Fetch error:", error);
@@ -86,13 +86,13 @@ export default function Customer() {
       if (contactId) {
         await axios.put(`http://localhost:5000/api/v1/contactperson/updateContactPerson/${contactId}`, values);
         toast({
-          title: "Success",
+          title: "Update Successful!",
           description: "Contact updated successfully!",
         });
       } else {
         await axios.post("http://localhost:5000/api/v1/contactperson/generateContactPerson", values);
         toast({
-          title: "Success",
+          title: "Create Successful!",
           description: "Contact created successfully!",
         });
         form.reset();

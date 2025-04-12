@@ -11,7 +11,6 @@ import {
 
 import React, { useEffect, useState } from "react"
 import { useRouter } from 'next/navigation';
-import 'react-toastify/dist/ReactToastify.css';
 import { Button } from "@/components/ui/button"
 import { SearchIcon } from "lucide-react"
 import { Input } from "@/components/ui/input"

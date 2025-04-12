@@ -7,8 +7,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-
-
+import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +15,6 @@ import { useState } from "react";
 import { Eye, EyeOff } from "react-feather";
 import { AdminSidebar } from "@/components/admin-sidebar";
 import { ModeToggle } from "@/components/ModeToggle";
-
 
 export function RegisterPage() {
   const [name, setName] = useState("");
@@ -63,13 +61,19 @@ export function RegisterPage() {
           setError(data.error || "An error occurred. Please try again.");
         }
       } else {
-        alert("Registration successful!");
-
+        toast({
+          title: "Registration successful!",
+          description: "You have registered successfully!",
+        })
       }
     } catch (error) {
-      setError("An error occurred during registration. Please try again.");
+      toast({
+        title: "Error",
+        description: "An error occurred during registration. Please try again.",
+        variant: "destructive",
+      })
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
   return (

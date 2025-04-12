@@ -1,8 +1,7 @@
 'use client';
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Loader2, SearchIcon, Edit2Icon, DeleteIcon, FileDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -17,7 +16,6 @@ import { ModeToggle } from "@/components/ModeToggle";
 import { Pagination, Tooltip } from "@heroui/react";
 import { AdminSidebar } from "@/components/admin-sidebar";
 
-// Define the ContactPerson type
 interface ContactPerson {
     firstName: string;
     middleName: string;
@@ -34,7 +32,6 @@ const generateUniqueId = () => {
     return Math.random().toString(36).substring(2) + Date.now().toString(36);
 };
 
-// Define columns for the table
 const columns = [
     { name: "FIRST NAME", uid: "firstName", sortable: true, width: "120px" },
     { name: "MIDDLE NAME", uid: "middleName", sortable: true, width: "120px" },
@@ -45,7 +42,6 @@ const columns = [
     { name: "ACTION", uid: "actions", sortable: false, width: "100px" },
 ];
 
-// Define initial visible columns
 const INITIAL_VISIBLE_COLUMNS = ["firstName", "middleName", "lastName", "contactNo", "email", "designation", "actions"];
 
 export default function ContactPersonDetailsTable() {
@@ -80,8 +76,7 @@ export default function ContactPersonDetailsTable() {
             );
             let contactPersonsData = response.data.data || [];
 
-            // Add newly fetched data at the top
-            setContactPersons(prev => [...contactPersonsData, ...prev]); // Prepend the data
+            setContactPersons(prev => [...contactPersonsData, ...prev]); 
 
             setError(null);
         } catch (error) {
@@ -91,8 +86,6 @@ export default function ContactPersonDetailsTable() {
         }
     };
 
-
-    // Delete contact person by ID
     const handleDelete = async (contactPersonId: string) => {
         if (!window.confirm("Are you sure you want to delete this contact person?")) {
             return;
@@ -110,13 +103,19 @@ export default function ContactPersonDetailsTable() {
             );
 
             setContactPersons(prev => prev.filter(contact => contact._id !== contactPersonId));
-            toast.success("Contact person deleted successfully");
+            toast({
+                title: "Delete Successful!",
+                description: "Contact person deleted successfully!",
+            });
         } catch (error) {
             console.error("Error deleting contact person:", error);
-            toast.error("Failed to delete contact person");
+            toast({
+                title: "Error",
+                description: "Failed to delete contact person.",
+                variant: "destructive",
+            });
         }
     };
-
 
     const filteredItems = React.useMemo<ContactPerson[]>(() => {
         let filtered = [...contactPersons];
@@ -148,8 +147,6 @@ export default function ContactPersonDetailsTable() {
         });
     }, [filteredItems, sortDescriptor]);
 
-
-    // Pagination logic
     const paginatedItems = React.useMemo(() => {
         const start = (page - 1) * rowsPerPage;
         return sortedItems.slice(start, start + rowsPerPage);

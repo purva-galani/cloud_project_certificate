@@ -1,8 +1,7 @@
 'use client';
 import React, { useEffect, useState } from "react"
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button"
 import { Loader2, SearchIcon, Edit2Icon, FileDown, DeleteIcon } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -168,10 +167,17 @@ export default function CertificateTable() {
             setCertificates((prevCertificates) => prevCertificates.filter(cert => cert._id !== certificateId));
 
             // Show success message
-            toast.success("Certificate deleted successfully.");
+            toast({
+                title: "Delete Successful!",
+                description: "Certificate deleted successfully!",
+            });
         } catch (error) {
             console.error("Error deleting certificate:", error);
-            toast.error("Failed to delete certificate.");
+            toast({
+                title: "Error",
+                description: "Failed to delete certificate.",
+                variant: "destructive",
+            });        
         }
     };
 
@@ -257,8 +263,8 @@ export default function CertificateTable() {
             window.URL.revokeObjectURL(url);
 
             toast({
-                title: "Success",
-                description: "Certificate downloaded successfully",
+                title: "Download Successful!",
+                description: "Certificate downloaded successfully!",
                 variant: "default",
             });
         } catch (err) {
@@ -290,7 +296,6 @@ export default function CertificateTable() {
             setIsDownloading(null);
         }
     };
-
 
     const onNextPage = React.useCallback(() => {
         if (page < pages) {

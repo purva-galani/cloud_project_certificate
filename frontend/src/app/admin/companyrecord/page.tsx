@@ -1,8 +1,7 @@
 'use client';
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Loader2, SearchIcon, Edit2Icon, DeleteIcon, FileDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -118,10 +117,17 @@ export default function CompanyDetailsTable() {
             );
 
             setCompanies(prev => prev.filter(company => company._id !== companyId));
-            toast.success("Company deleted successfully");
-        } catch (error) {
+            toast({
+                title: "Delete Successful!",
+                description: "Company deleted successfully!",
+            });
+            } catch (error) {
             console.error("Error deleting company:", error);
-            toast.error("Failed to delete company");
+            toast({
+                title: "Error",
+                description: "Failed to delete company.",
+                variant: "destructive",
+            });        
         }
     };
 

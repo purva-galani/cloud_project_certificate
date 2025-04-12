@@ -6,6 +6,8 @@ import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { AdminSidebar } from "@/components/admin-sidebar";
 import { ModeToggle } from "@/components/ModeToggle";
+import { toast } from "@/hooks/use-toast"
+import { Trash2 } from "lucide-react";
 
 interface Observation {
     gas: string;
@@ -71,6 +73,19 @@ export default function AddModel() {
         fetchServiceEngineers();
     }, []);
 
+    useEffect(() => {
+        const fetchEngineers = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/api/v1/engineers/getEngineers");
+                const data = await response.json();
+                setEngineers(data);
+            } catch (error) {
+                console.error("Error fetching engineers:", error);
+            }
+        };
+        fetchEngineers();
+    }, []);
+
     const handleAddServiceEngineer = async () => {
         if (newServiceEngineer) {
             setLoading(true);
@@ -83,7 +98,6 @@ export default function AddModel() {
                     body: JSON.stringify({ name: newServiceEngineer }),
                 });
 
-                // Check if response is JSON
                 const contentType = response.headers.get("content-type");
                 if (!contentType || !contentType.includes("application/json")) {
                     throw new Error("Server did not return JSON");
@@ -97,31 +111,28 @@ export default function AddModel() {
 
                 setServiceEngineers([...serviceEngineers, { name: newServiceEngineer, id: result.id }]);
                 setNewServiceEngineer("");
-                alert("Service engineer added successfully");
-            } catch (error) {
-                console.error("Error adding service engineer:", error);
-                alert(error.message || "Failed to add service engineer. Check console for details.");
-            } finally {
+                toast({
+                    title: "Add Successful!",
+                    description: "Service engineer added successfully!",
+                });
+                }catch (error) {
+                    console.error("Error adding service engineer:", error);
+                    toast({
+                        title: "Error",
+                        description: error instanceof Error ? error.message : "Failed to add service engineer",
+                        variant: "destructive",
+                    });
+                } finally {
                 setLoading(false);
             }
         } else {
-            alert("Please enter a service engineer name.");
+            toast({
+                title: "Warning",
+                description: "Please enter a service engineer name",
+                variant: "default",
+            });        
         }
     };
-
-
-    useEffect(() => {
-        const fetchEngineers = async () => {
-            try {
-                const response = await fetch("http://localhost:5000/api/v1/engineers/getEngineers");
-                const data = await response.json();
-                setEngineers(data);
-            } catch (error) {
-                console.error("Error fetching engineers:", error);
-            }
-        };
-        fetchEngineers();
-    }, []);
 
     const handleAddEngineer = async () => {
         if (newEngineer) {
@@ -139,18 +150,75 @@ export default function AddModel() {
                 if (response.ok) {
                     setEngineers([...engineers, { name: newEngineer, id: result.id }]);
                     setNewEngineer("");
-                    alert(result.message);
+                    toast({
+                        title: "Add Successful!",
+                        description: "Engineer added successfully!",
+                    })
                 } else {
                     alert(result.error);
                 }
             } catch (error) {
                 console.error("Error adding engineer:", error);
-                alert("Failed to add engineer.");
+                toast({
+                    title: "Error",
+                    description: error instanceof Error ? error.message : "Failed to add engineer",
+                    variant: "destructive",
+                });
             } finally {
                 setLoading(false);
             }
         } else {
-            alert("Please enter an engineer name.");
+            toast({
+                title: "Warning",
+                description: "Please enter an engineer name",
+                variant: "default",
+            });       
+        }
+    };
+
+    const handleNewModelAndRange = async () => {
+        if (newModel && newRange) {
+            setLoading(true);
+            try {
+                const response = await fetch('http://localhost:5000/api/v1/addcategory/addnewCategory', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model_name: newModel,
+                        range: newRange,
+                    }),
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    setModels([...models, { id: result.id, model_name: newModel, range: newRange }]);
+                    setNewModel("");
+                    setNewRange("");
+                    toast({
+                        title: "Success",
+                        description: "Model and range added successfully!",
+                    });
+                    } else {
+                    alert(result.error);
+                }
+            } catch (error) {
+                console.error("Error adding category:", error);
+                toast({
+                    title: "Error",
+                    description: error instanceof Error ? error.message : "Failed to add model and range",
+                    variant: "destructive",
+                });
+            } finally {
+                setLoading(false);
+            }
+        } else {
+            toast({
+                title: "Warning",
+                description: "Please fill both the model and range",
+                variant: "default",
+            });
         }
     };
 
@@ -179,51 +247,7 @@ export default function AddModel() {
         }
     };
 
-    const handleNewModelAndRange = async () => {
-        if (newModel && newRange) {
-            setLoading(true);
-            try {
-                const response = await fetch('http://localhost:5000/api/v1/addcategory/addnewCategory', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        model_name: newModel,
-                        range: newRange,
-                    }),
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                    setModels([...models, { id: result.id, model_name: newModel, range: newRange }]);
-                    setNewModel("");
-                    setNewRange("");
-                    alert(result.message);
-                } else {
-                    alert(result.error);
-                }
-            } catch (error) {
-                console.error("Error adding category:", error);
-                alert("Failed to add new model and range.");
-            } finally {
-                setLoading(false);
-            }
-        } else {
-            alert("Please fill both the model and range.");
-        }
-    };
-
     const handleDeleteModel = async (id: string) => {
-        if (!id) {
-            alert("Invalid category ID");
-            return;
-        }
-
-        if (!/^[0-9a-fA-F]{24}$/.test(id)) {
-            alert("Invalid ObjectId format");
-            return;
-        }
 
         if (!window.confirm("Are you sure you want to delete this model?")) {
             return;
@@ -244,7 +268,6 @@ export default function AddModel() {
 
             setModels(models.filter(model => model.id !== id));
 
-            // Reset form if the deleted model was selected
             if (formData.makeModel === models.find(m => m.id === id)?.model_name) {
                 setFormData(prev => ({
                     ...prev,
@@ -253,18 +276,92 @@ export default function AddModel() {
                 }));
             }
 
-            alert("Model deleted successfully");
+            toast({
+                title: "Success",
+                description: "Model deleted successfully",
+            });        
         } catch (error) {
             console.error("Error deleting category:", error);
-            alert("Error deleting model. Please try again.");
+            toast({
+                title: "Error",
+                description: "Error deleting model. Please try again.",
+                variant: "destructive",
+            });        
         } finally {
             setDeleteLoading(null);
         }
     };
 
+    const handleDeleteEngineer = async (id: string) => {
+        if (!window.confirm("Are you sure you want to delete this engineer?")) {
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://localhost:5000/api/v1/engineers/deleteEngineer/${id}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
+            });
+    
+            const result = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(result.error || "Failed to delete engineer");
+            }
+    
+            setEngineers(engineers.filter(engineer => engineer.id !== id));
+            toast({
+                title: "Success",
+                description: "Engineer deleted successfully",
+            });
+        } catch (error) {
+            console.error("Error deleting engineer:", error);
+            toast({
+                title: "Error",
+                description: "Error deleting engineer. Please try again.",
+                variant: "destructive",
+            });
+        }
+    };
+    
+    const handleDeleteServiceEngineer = async (id: string) => {
+        if (!window.confirm("Are you sure you want to delete this service engineer?")) {
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://localhost:5000/api/v1/ServiceEngineer/deleteServiceEngineer/${id}`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" }
+            });
+    
+            const result = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(result.error || "Failed to delete service engineer");
+            }
+    
+            setServiceEngineers(serviceEngineers.filter(engineer => engineer.id !== id));
+            toast({
+                title: "Success",
+                description: "Service engineer deleted successfully",
+            });
+        } catch (error) {
+            console.error("Error deleting service engineer:", error);
+            toast({
+                title: "Error",
+                description: "Error deleting service engineer. Please try again.",
+                variant: "destructive",
+            });
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        alert("Form submitted! (No backend interaction)");
+        toast({
+            title: "Form submitted",
+            description: "No backend interaction implemented yet",
+        });
     };
 
     return (
@@ -304,21 +401,38 @@ export default function AddModel() {
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <h2 className="text-lg font-bold mt-4">Add New Model and Range</h2>
+
+                                <div className="mt-2 space-y-2">
+                                    {models.map((model) => (
+                                        <div key={model.id} className="flex items-center justify-between p-2 border rounded">
+                                            <span>{model.model_name} - {model.range}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteModel(model.id)}
+                                                className="text-red-500 hover:text-red-700"
+                                                disabled={deleteLoading === model.id}
+                                            >
+                                                {deleteLoading === model.id ? "Deleting..." : <Trash2 size={18} />}
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+
                                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                     <div className="relative">
-                                        <select
-                                            name="makeModel"
-                                            value={formData.makeModel}
-                                            onChange={handleChange}
-                                            className="p-2 border rounded w-full"
-                                        >
-                                            <option value="">Select Make and Model</option>
-                                            {models.map((model) => (
-                                                <option key={model.id} value={model.model_name}>
-                                                    {model.model_name}
-                                                </option>
-                                            ))}
-                                        </select>
+                                    <select
+                                        name="makeModel"
+                                        value={formData.makeModel}
+                                        onChange={handleChange}
+                                        className="p-2 border rounded w-full"
+                                    >
+                                        <option value="">Select Make and Model</option>
+                                        {models.map((model) => (
+                                            <option key={model.id} value={model.model_name}>
+                                                {model.model_name}
+                                            </option>
+                                        ))}
+                                    </select>
                                     </div>
                                     <input
                                         type="text"
@@ -331,10 +445,6 @@ export default function AddModel() {
                                     />
                                 </div>
 
-
-
-
-                                {/* Add New Model and Range */}
                                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                     <input
                                         type="text"
@@ -362,6 +472,22 @@ export default function AddModel() {
                                 </button>
 
                                 <h2 className="text-lg font-bold mt-4">Add New Engineer</h2>
+
+                                <div className="mt-2 space-y-2">
+                                    {engineers.map((engineer) => (
+                                        <div key={engineer.id} className="flex items-center justify-between p-2 border rounded">
+                                            <span>{engineer.name}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteEngineer(engineer.id)}
+                                                className="text-red-500 hover:text-red-700"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+
                                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                     <select
                                         name="selectedEngineer"
@@ -376,7 +502,6 @@ export default function AddModel() {
                                             </option>
                                         ))}
                                     </select>
-
                                     <input
                                         type="text"
                                         placeholder="New Engineer Name"
@@ -396,20 +521,36 @@ export default function AddModel() {
                                 </button>
 
                                 <h2 className="text-lg font-bold mt-4">Add New Service Engineer</h2>
+
+                                <div className="mt-2 space-y-2">
+                                    {serviceEngineers.map((engineer) => (
+                                        <div key={engineer.id} className="flex items-center justify-between p-2 border rounded">
+                                            <span>{engineer.name}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteServiceEngineer(engineer.id)}
+                                                className="text-red-500 hover:text-red-700"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+
                                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                    <select
-                                        name="selectedServiceEngineer"
-                                        value={selectedServiceEngineer}
-                                        onChange={(e) => setSelectedServiceEngineer(e.target.value)}
-                                        className="p-2 border rounded"
-                                    >
-                                        <option value="">Select Service Engineer</option>
-                                        {serviceEngineers.map((engineer) => (
-                                            <option key={engineer.id} value={engineer.id}>
-                                                {engineer.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                <select
+                                    name="selectedServiceEngineer"
+                                    value={selectedServiceEngineer}
+                                    onChange={(e) => setSelectedServiceEngineer(e.target.value)}
+                                    className="p-2 border rounded"
+                                >
+                                    <option value="">Select Service Engineer</option>
+                                    {serviceEngineers.map((engineer) => (
+                                        <option key={engineer.id} value={engineer.id}>
+                                            {engineer.name}
+                                        </option>
+                                    ))}
+                                </select>
 
                                     <input
                                         type="text"

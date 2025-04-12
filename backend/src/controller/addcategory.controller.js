@@ -5,13 +5,11 @@ const addNewCategory = async (req, res) => {
   try {
     const { model_name, range } = req.body;
 
-    // Check if the model already exists
     const existingCategory = await AddCategory.findOne({ model_name });
     if (existingCategory) {
       return res.status(400).json({ error: 'Model already exists' });
     }
 
-  
     const newCategory = new AddCategory({ model_name, range });
     await newCategory.save();
 
@@ -25,7 +23,6 @@ const addNewCategory = async (req, res) => {
   }
 };
 
-
 const getCategories = async (req, res) => {
   try {
     const categories = await AddCategory.find();
@@ -36,7 +33,6 @@ const getCategories = async (req, res) => {
   }
 };
 
-// Controller to update a category (model_name and range)
 const updateCategory = async (req, res) => {
   const { id, model_name, range } = req.body;
 
@@ -44,7 +40,7 @@ const updateCategory = async (req, res) => {
     const updatedCategory = await AddCategory.findByIdAndUpdate(
       id,
       { model_name, range },
-      { new: true } // Returns the updated document
+      { new: true } 
     );
 
     if (!updatedCategory) {
@@ -61,10 +57,9 @@ const updateCategory = async (req, res) => {
   }
 };
 
-
 const deleteCategory = async (req, res) => {
   try {
-      const { id } = req.params; // Extract ID from URL params
+      const { id } = req.params; 
 
       if (!mongoose.Types.ObjectId.isValid(id)) {
           return res.status(400).json({ error: "Invalid category ID" });
@@ -82,8 +77,6 @@ const deleteCategory = async (req, res) => {
       res.status(500).json({ error: "Server error" });
   }
 };
-
-
 
 module.exports = {
   addNewCategory,

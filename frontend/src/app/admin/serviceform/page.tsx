@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/admin-sidebar";
+import { AdminSidebar } from "@/components/admin-sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import axios from "axios";
-import { toast } from "@heroui/react";
+import { toast } from "@/hooks/use-toast";
 
 interface EngineerRemarks {
     serviceSpares: string;
@@ -444,27 +444,23 @@ export default function GenerateService() {
                         }
                     }
                 );
-    
-                toast({
-                    title: "Success",
-                    description: "Certificate downloaded and email sent successfully",
-                    variant: "default",
-                });
             } else {
                 toast({
-                    title: "Downloaded",
-                    description: "Certificate downloaded successfully",
+                    title: "Downloaded Successfully!",
+                    description: "Certificate downloaded successfully!",
                     variant: "default",
                 });
             }
     
-        } catch (err) {
+        } catch (err: any) {
             console.error("Error:", err);
-            toast({
-                title: "Error",
-                description: err.response?.data?.error || "Failed to download certificate",
-                variant: "destructive",
-            });
+            if (axios.isAxiosError(err)) {
+                toast({
+                    title: "Error",
+                    description: err.response?.data?.error || "Failed to download certificate",
+                    variant: "destructive",
+                });
+            }
         } finally {
             setIsGeneratingPDF(false);
         }
@@ -473,7 +469,7 @@ export default function GenerateService() {
 
     return (
         <SidebarProvider>
-            <AppSidebar />
+            <AdminSidebar />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">

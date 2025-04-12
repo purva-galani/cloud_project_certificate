@@ -79,7 +79,7 @@ export default function AddCategory() {
                 } catch (error) {
                     toast({
                         title: "Error",
-                        description: "Failed to fetch company details",
+                        description: "Failed to fetch company details.",
                         variant: "destructive",
                     });
                     console.error("Fetch error:", error);
@@ -99,13 +99,13 @@ export default function AddCategory() {
             if (certificateId) {
                 response = await axios.put(`http://localhost:5000/api/v1/company/updatecompany/${certificateId}`, values);
                 toast({
-                    title: "Success",
+                    title: "Update Successful!",
                     description: "Company updated successfully!",
                 });
             } else {
                 response = await axios.post("http://localhost:5000/api/v1/company/createcompany", values);
                 toast({
-                    title: "Success",
+                    title: "Create Successful!",
                     description: "Company created successfully!",
                 });
                 form.reset();
