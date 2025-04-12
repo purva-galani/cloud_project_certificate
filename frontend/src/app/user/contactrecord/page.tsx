@@ -15,9 +15,8 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbS
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@heroui/react";
 import { ModeToggle } from "@/components/ModeToggle";
 import { Pagination, Tooltip } from "@heroui/react";
-import { AdminSidebar } from "@/components/admin-sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
-// Define the ContactPerson type
 interface ContactPerson {
     firstName: string;
     middleName: string;
@@ -34,7 +33,6 @@ const generateUniqueId = () => {
     return Math.random().toString(36).substring(2) + Date.now().toString(36);
 };
 
-// Define columns for the table
 const columns = [
     { name: "FIRST NAME", uid: "firstName", sortable: true, width: "120px" },
     { name: "MIDDLE NAME", uid: "middleName", sortable: true, width: "120px" },
@@ -44,7 +42,6 @@ const columns = [
     { name: "DESIGNATION", uid: "designation", sortable: true, width: "120px" },
 ];
 
-// Define initial visible columns
 const INITIAL_VISIBLE_COLUMNS = ["firstName", "middleName", "lastName", "contactNo", "email", "designation",];
 
 export default function ContactPersonDetailsTable() {
@@ -79,8 +76,7 @@ export default function ContactPersonDetailsTable() {
             );
             let contactPersonsData = response.data.data || [];
 
-            // Add newly fetched data at the top
-            setContactPersons(prev => [...contactPersonsData, ...prev]); // Prepend the data
+            setContactPersons(prev => [...contactPersonsData, ...prev]); 
 
             setError(null);
         } catch (error) {
@@ -91,7 +87,6 @@ export default function ContactPersonDetailsTable() {
     };
 
 
-    // Delete contact person by ID
     const handleDelete = async (contactPersonId: string) => {
         if (!window.confirm("Are you sure you want to delete this contact person?")) {
             return;
@@ -146,7 +141,6 @@ export default function ContactPersonDetailsTable() {
         });
     }, [filteredItems, sortDescriptor]);
 
-    // Pagination logic
     const paginatedItems = React.useMemo(() => {
         const start = (page - 1) * rowsPerPage;
         return sortedItems.slice(start, start + rowsPerPage);
@@ -275,7 +269,7 @@ export default function ContactPersonDetailsTable() {
 
     return (
         <SidebarProvider>
-            <AdminSidebar />
+            <AppSidebar />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">

@@ -21,12 +21,26 @@ import { Input } from "@/components/ui/input";
 const companySchema = z.object({
   companyName: z.string().min(1, { message: "Company name is required" }),
   address: z.string().min(1, { message: "Address is required" }),
-  gstNumber: z.string().min(15, { message: "GST number must be 15 characters" }).max(15, { message: "GST number must be 15 characters" }).optional(),
+  gstNumber: z.preprocess(
+    (val) => (val === "" ? undefined : val),
+    z.string({
+      required_error: "GST number is required"
+    })
+    .min(15, { message: "Invalid GST number" })
+    .max(15, { message: "Invalid GST number" })
+  ),
   industries: z.string().min(1, { message: "Industries is required" }),
-  website: z.string().url({ message: "Invalid website URL" }).or(z.literal("")),
-  industriesType: z.string().optional(),
-  flag: z.enum(["Red", "Yellow", "Green", ""]).optional(),
-});
+  website: z.preprocess((val) => (val === "" ? undefined : val),
+  z.string({
+    required_error: "Website is required",
+    invalid_type_error: "Invalid website URL"
+  }).url("Invalid website URL")
+),
+  industriesType: z.string().min(1, { message: "Industries type is required" }),
+  flag: z.enum(["Red", "Yellow", "Green"], {
+    errorMap: () => ({ message: "Flag is required" }),
+  }),
+  });
 
 export default function AddCategory() {
     const searchParams = useSearchParams();

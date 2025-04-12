@@ -19,13 +19,12 @@ import { Input } from "@/components/ui/input";
 
 const contactSchema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
-  middleName: z.string().optional(),
+  middleName: z.string().min(1, { message: "Middle name is required" }),
   lastName: z.string().min(1, { message: "Last name is required" }),
   contactNo: z.string()
-    .min(10, { message: "Phone number must be at least 10 digits" })
-    .max(15, { message: "Phone number too long" })
-    .regex(/^[0-9]+$/, { message: "Only numbers are allowed" }),
-  email: z.string().email({ message: "Invalid email address" }),
+    .regex(/^\d*$/, { message: "Contact number must be numeric" })
+    .nonempty({ message: "Required" }),
+  email: z.string().email({ message: "mailaddress is required" }),
   designation: z.string().min(1, { message: "Designation is required" }),
 });
 
@@ -206,11 +205,15 @@ export default function Customer() {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input
-                              placeholder="Contact Number"
-                              {...field}
-                              disabled={isSubmitting}
-                            />
+                          <Input
+                            placeholder="Contact Number"
+                            type="tel"
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/[^0-9]/g, '');
+                              field.onChange(value);
+                            }}
+                          />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
