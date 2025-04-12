@@ -57,7 +57,7 @@ export default function AddCategory() {
             industries: "",
             website: "",
             industriesType: "",
-            flag: "",
+            flag: undefined,
         },
     });
 
