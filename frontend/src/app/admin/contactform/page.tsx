@@ -207,10 +207,14 @@ export default function Customer() {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                            <Input
-                              placeholder="Contact Number"
-                              {...field}
-                              disabled={isSubmitting}
+                          <Input
+                            placeholder="Contact Number"
+                            type="tel"
+                            {...field}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/[^0-9]/g, '');
+                              field.onChange(value);
+                            }}
                             />
                           </FormControl>
                           <FormMessage />

@@ -60,11 +60,6 @@ const updateCategory = async (req, res) => {
 const deleteCategory = async (req, res) => {
   try {
       const { id } = req.params; 
-
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-          return res.status(400).json({ error: "Invalid category ID" });
-      }
-
       const deletedCategory = await AddCategory.findByIdAndDelete(id);
 
       if (!deletedCategory) {

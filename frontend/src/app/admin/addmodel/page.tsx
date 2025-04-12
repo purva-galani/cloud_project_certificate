@@ -281,7 +281,6 @@ export default function AddModel() {
                 description: "Model deleted successfully",
             });        
         } catch (error) {
-            console.error("Error deleting category:", error);
             toast({
                 title: "Error",
                 description: "Error deleting model. Please try again.",
@@ -400,175 +399,177 @@ export default function AddModel() {
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-6">
+                                <>
                                 <h2 className="text-lg font-bold mt-4">Add New Model and Range</h2>
-
-                                <div className="mt-2 space-y-2">
-                                    {models.map((model) => (
-                                        <div key={model.id} className="flex items-center justify-between p-2 border rounded">
-                                            <span>{model.model_name} - {model.range}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDeleteModel(model.id)}
-                                                className="text-red-500 hover:text-red-700"
-                                                disabled={deleteLoading === model.id}
-                                            >
-                                                {deleteLoading === model.id ? "Deleting..." : <Trash2 size={18} />}
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                    <div className="relative">
-                                    <select
-                                        name="makeModel"
-                                        value={formData.makeModel}
-                                        onChange={handleChange}
-                                        className="p-2 border rounded w-full"
-                                    >
-                                        <option value="">Select Make and Model</option>
+                                    <div className="mt-2 space-y-2">
                                         {models.map((model) => (
-                                            <option key={model.id} value={model.model_name}>
-                                                {model.model_name}
-                                            </option>
+                                            <div key={model.id} className="flex items-center justify-between p-2 border rounded">
+                                                <span>{model.model_name} - {model.range}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteModel(model.id)}
+                                                    className="text-red-500 hover:text-red-700"
+                                                    disabled={deleteLoading === model.id}
+                                                >
+                                                    {deleteLoading === model.id ? "Deleting..." : <Trash2 size={18} />}
+                                                </button>
+                                            </div>
                                         ))}
-                                    </select>
                                     </div>
-                                    <input
-                                        type="text"
-                                        name="range"
-                                        placeholder="Range"
-                                        value={formData.range}
-                                        onChange={handleChange}
-                                        className="p-2 border rounded"
-                                        disabled
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                    <input
-                                        type="text"
-                                        placeholder="New Model"
-                                        value={newModel}
-                                        onChange={(e) => setNewModel(e.target.value)}
-                                        className="p-2 border rounded"
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="New Range"
-                                        value={newRange}
-                                        onChange={(e) => setNewRange(e.target.value)}
-                                        className="p-2 border rounded"
-                                    />
-                                </div>
-
-                                <button
-                                    type="button"
-                                    onClick={handleNewModelAndRange}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Adding...' : 'Add New Model and Range'}
-                                </button>
-
-                                <h2 className="text-lg font-bold mt-4">Add New Engineer</h2>
-
-                                <div className="mt-2 space-y-2">
-                                    {engineers.map((engineer) => (
-                                        <div key={engineer.id} className="flex items-center justify-between p-2 border rounded">
-                                            <span>{engineer.name}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDeleteEngineer(engineer.id)}
-                                                className="text-red-500 hover:text-red-700"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
+                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                        <div className="relative">
+                                        <select
+                                            name="makeModel"
+                                            value={formData.makeModel}
+                                            onChange={handleChange}
+                                            className="p-2 border rounded w-full"
+                                        >
+                                            <option value="">Select Make and Model</option>
+                                            {models.map((model) => (
+                                                <option key={model.id} value={model.model_name}>
+                                                    {model.model_name}
+                                                </option>
+                                            ))}
+                                        </select>
                                         </div>
-                                    ))}
-                                </div>
+                                        <input
+                                            type="text"
+                                            name="range"
+                                            placeholder="Range"
+                                            value={formData.range}
+                                            onChange={handleChange}
+                                            className="p-2 border rounded"
+                                            disabled
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                        <input
+                                            type="text"
+                                            placeholder="New Model"
+                                            value={newModel}
+                                            onChange={(e) => setNewModel(e.target.value)}
+                                            className="p-2 border rounded"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="New Range"
+                                            value={newRange}
+                                            onChange={(e) => setNewRange(e.target.value)}
+                                            className="p-2 border rounded"
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={handleNewModelAndRange}
+                                        className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                                        disabled={loading}
+                                    >
+                                        {loading ? 'Adding...' : 'Add New Model and Range'}
+                                    </button>
+                                </>
 
-                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                <>
+                                    <h2 className="text-lg font-bold mt-4">Add New Engineer</h2>
+
+                                    <div className="mt-2 space-y-2">
+                                        {engineers.map((engineer) => (
+                                            <div key={engineer.id} className="flex items-center justify-between p-2 border rounded">
+                                                <span>{engineer.name}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteEngineer(engineer.id)}
+                                                    className="text-red-500 hover:text-red-700"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                        <select
+                                            name="selectedEngineer"
+                                            value={selectedEngineer}
+                                            onChange={(e) => setSelectedEngineer(e.target.value)}
+                                            className="p-2 border rounded"
+                                        >
+                                            <option value="">Select Engineer</option>
+                                            {engineers.map((engineer) => (
+                                                <option key={engineer.id} value={engineer.id}>
+                                                    {engineer.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <input
+                                            type="text"
+                                            placeholder="New Engineer Name"
+                                            value={newEngineer}
+                                            onChange={(e) => setNewEngineer(e.target.value)}
+                                            className="p-2 border rounded"
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleAddEngineer}
+                                        className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                                        disabled={loading}
+                                    >
+                                        {loading ? "Adding..." : "Add Engineer"}
+                                    </button>
+                                </>
+                                
+                                <>
+                                    <h2 className="text-lg font-bold mt-4">Add New Service Engineer</h2>
+
+                                    <div className="mt-2 space-y-2">
+                                        {serviceEngineers.map((engineer) => (
+                                            <div key={engineer.id} className="flex items-center justify-between p-2 border rounded">
+                                                <span>{engineer.name}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleDeleteServiceEngineer(engineer.id)}
+                                                    className="text-red-500 hover:text-red-700"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                     <select
-                                        name="selectedEngineer"
-                                        value={selectedEngineer}
-                                        onChange={(e) => setSelectedEngineer(e.target.value)}
+                                        name="selectedServiceEngineer"
+                                        value={selectedServiceEngineer}
+                                        onChange={(e) => setSelectedServiceEngineer(e.target.value)}
                                         className="p-2 border rounded"
                                     >
-                                        <option value="">Select Engineer</option>
-                                        {engineers.map((engineer) => (
+                                        <option value="">Select Service Engineer</option>
+                                        {serviceEngineers.map((engineer) => (
                                             <option key={engineer.id} value={engineer.id}>
                                                 {engineer.name}
                                             </option>
                                         ))}
                                     </select>
-                                    <input
-                                        type="text"
-                                        placeholder="New Engineer Name"
-                                        value={newEngineer}
-                                        onChange={(e) => setNewEngineer(e.target.value)}
-                                        className="p-2 border rounded"
-                                    />
-                                </div>
 
-                                <button
-                                    type="button"
-                                    onClick={handleAddEngineer}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-                                    disabled={loading}
-                                >
-                                    {loading ? "Adding..." : "Add Engineer"}
-                                </button>
+                                        <input
+                                            type="text"
+                                            placeholder="New Service Engineer Name"
+                                            value={newServiceEngineer}
+                                            onChange={(e) => setNewServiceEngineer(e.target.value)}
+                                            className="p-2 border rounded"
+                                        />
+                                    </div>
 
-                                <h2 className="text-lg font-bold mt-4">Add New Service Engineer</h2>
-
-                                <div className="mt-2 space-y-2">
-                                    {serviceEngineers.map((engineer) => (
-                                        <div key={engineer.id} className="flex items-center justify-between p-2 border rounded">
-                                            <span>{engineer.name}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleDeleteServiceEngineer(engineer.id)}
-                                                className="text-red-500 hover:text-red-700"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                <select
-                                    name="selectedServiceEngineer"
-                                    value={selectedServiceEngineer}
-                                    onChange={(e) => setSelectedServiceEngineer(e.target.value)}
-                                    className="p-2 border rounded"
-                                >
-                                    <option value="">Select Service Engineer</option>
-                                    {serviceEngineers.map((engineer) => (
-                                        <option key={engineer.id} value={engineer.id}>
-                                            {engineer.name}
-                                        </option>
-                                    ))}
-                                </select>
-
-                                    <input
-                                        type="text"
-                                        placeholder="New Service Engineer Name"
-                                        value={newServiceEngineer}
-                                        onChange={(e) => setNewServiceEngineer(e.target.value)}
-                                        className="p-2 border rounded"
-                                    />
-                                </div>
-
-                                <button
-                                    type="button"
-                                    onClick={handleAddServiceEngineer}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-                                    disabled={loading}
-                                >
-                                    {loading ? "Adding..." : "Add Service Engineer"}
-                                </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleAddServiceEngineer}
+                                        className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                                        disabled={loading}
+                                    >
+                                        {loading ? "Adding..." : "Add Service Engineer"}
+                                    </button>
+                                </>
 
                             </form>
                         </CardContent>
