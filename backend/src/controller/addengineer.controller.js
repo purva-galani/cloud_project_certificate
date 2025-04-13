@@ -1,7 +1,6 @@
 const Engineer = require("../model/addengineer.model");
 const mongoose = require("mongoose");
 
-// Get all engineers
 const getEngineers = async (req, res) => {
     try {
         const engineers = await Engineer.find();
@@ -11,7 +10,6 @@ const getEngineers = async (req, res) => {
     }
 };
 
-// Add new engineer
 const addEngineer = async (req, res) => {
     try {
         const { name } = req.body;
@@ -25,7 +23,6 @@ const addEngineer = async (req, res) => {
     }
 };
 
-// Delete engineer
 const deleteEngineer = async (req, res) => {
     try {
         const { id } = req.params;

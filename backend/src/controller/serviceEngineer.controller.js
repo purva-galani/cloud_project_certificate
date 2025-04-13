@@ -1,6 +1,5 @@
-const ServiceEngineer = require("../model/serviceEngineer.model"); // Ensure case matches your file
+const ServiceEngineer = require("../model/serviceEngineer.model"); 
 
-// Get all engineers
 const getServiceEngineers = async (req, res) => {
     try {
         const engineers = await ServiceEngineer.find();
@@ -10,7 +9,6 @@ const getServiceEngineers = async (req, res) => {
     }
 };
 
-// Add new engineer
 const addServiceEngineer = async (req, res) => {
     try {
         const { name } = req.body;
@@ -29,7 +27,6 @@ const updateServiceEngineer = async (req, res) => {
         const { id } = req.params;
         const { name } = req.body;
 
-        // Validate ID format
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ 
                 success: false,
@@ -37,7 +34,6 @@ const updateServiceEngineer = async (req, res) => {
             });
         }
 
-        // Validate name
         if (!name || typeof name !== 'string' || name.trim().length === 0) {
             return res.status(400).json({ 
                 success: false,
@@ -47,7 +43,6 @@ const updateServiceEngineer = async (req, res) => {
 
         const trimmedName = name.trim();
 
-        // Check if engineer exists before updating
         const existingEngineer = await ServiceEngineer.findById(id);
         if (!existingEngineer) {
             return res.status(404).json({ 
@@ -56,13 +51,12 @@ const updateServiceEngineer = async (req, res) => {
             });
         }
 
-        // Update the engineer
         const updatedEngineer = await ServiceEngineer.findByIdAndUpdate(
             id, 
             { name: trimmedName }, 
             { 
-                new: true,         // Return the updated document
-                runValidators: true // Run schema validators on update
+                new: true,        
+                runValidators: true 
             }
         );
 
@@ -85,7 +79,6 @@ const updateServiceEngineer = async (req, res) => {
     } catch (error) {
         console.error("Error updating engineer:", error);
         
-        // Handle specific MongoDB errors
         if (error.name === 'ValidationError') {
             return res.status(400).json({ 
                 success: false,
@@ -102,11 +95,12 @@ const updateServiceEngineer = async (req, res) => {
     }
 };
 
-// Delete engineer
 const deleteServiceEngineer = async (req, res) => {
     try {
         const { id } = req.params;
+
         const deletedEngineer = await ServiceEngineer.findByIdAndDelete(id);
+        
         if (!deletedEngineer) return res.status(404).json({ error: "Engineer not found" });
 
         res.json({ message: "Engineer deleted successfully" });

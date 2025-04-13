@@ -5,7 +5,6 @@ const addCategorySchema = new mongoose.Schema(
     model_name: {
       type: String,
       required: true,
-      unique: true,  
     },
     range: {
       type: String,
