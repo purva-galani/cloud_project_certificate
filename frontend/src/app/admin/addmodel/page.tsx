@@ -475,7 +475,7 @@ export default function AddModel() {
                         <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
                             <>
                                 <h2 className="text-lg font-bold mt-4">Add New Model and Range</h2>
-                                    <div className="mt-2 space-y-2">
+                                    <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
                                         {models.length > 0 ? (
                                             models.map((model) => (
                                                 <div key={`model-${model.id}`} className="flex items-center justify-between p-2 border rounded">
@@ -484,9 +484,9 @@ export default function AddModel() {
                                                         type="button"
                                                         onClick={() => handleDeleteModel(model.id)}
                                                         className="text-red-500 hover:text-red-700"
-                                                        disabled={deleteLoading === model.id}
+                                                        disabled={deleteLoading.model === model.id}
                                                     >
-                                                        {deleteLoading === model.id ? "Deleting..." : <Trash2 size={18} />}
+                                                        {deleteLoading.model === model.id ? "Deleting..." : <Trash2 size={18} />}
                                                     </button>
                                                 </div>
                                             ))
@@ -550,7 +550,7 @@ export default function AddModel() {
 
                                 <>
                                     <h2 className="text-lg font-bold mt-4">Engineers</h2>
-                                    <div className="mt-2 space-y-2">
+                                    <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
                                         {engineers.length > 0 ? (
                                             engineers.map((engineer) => (
                                                 <div key={`engineer-${engineer.id}`} className="flex items-center justify-between p-2 border rounded">
@@ -606,7 +606,7 @@ export default function AddModel() {
                                 {/* Service Engineer Section */}
                                 <>
                                     <h2 className="text-lg font-bold mt-4">Service Engineers</h2>
-                                    <div className="mt-2 space-y-2">
+                                    <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
                                         {serviceEngineers.length > 0 ? (
                                             serviceEngineers.map((engineer) => (
                                                 <div key={`service-engineer-${engineer.id}`} className="flex items-center justify-between p-2 border rounded">
@@ -658,7 +658,6 @@ export default function AddModel() {
                                         {loading ? "Adding..." : "Add Service Engineer"}
                                     </button>
                                 </>
-
                             </form>
                         </CardContent>
                         <CardFooter></CardFooter>
