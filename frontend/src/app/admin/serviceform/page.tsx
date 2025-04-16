@@ -368,7 +368,7 @@ export default function GenerateService() {
         }
     };
 
-    const handleDownload = async () => {
+const handleDownload = async () => {
         const yourAccessToken = localStorage.getItem("authToken");
         const userRole = localStorage.getItem("authRole"); // <-- Make sure this is saved at login
     
@@ -428,7 +428,7 @@ export default function GenerateService() {
             console.error("Error:", err);
             toast({
                 title: "Error",
-                description: err.response?.data?.error || "Failed to download certificate",
+                description: "Failed to download certificate",
                 variant: "destructive",
             });
         } finally {

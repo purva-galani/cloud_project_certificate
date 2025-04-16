@@ -301,7 +301,7 @@ export default function GenerateService() {
             console.error("Error:", err);
             toast({
                 title: "Error",
-                description: err.response?.data?.error || "Failed to download certificate",
+                description:"Failed to download certificate",
                 variant: "destructive",
             });
         } finally {
