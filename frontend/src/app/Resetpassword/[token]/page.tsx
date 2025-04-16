@@ -183,8 +183,6 @@ export default function ResetPassword() {
                 ) : (
                   "Reset Password"
                 )}
-
-                {isSubmitting ? "Resetting..." : "Reset Password"}
               </button>
             </form>
           </>
