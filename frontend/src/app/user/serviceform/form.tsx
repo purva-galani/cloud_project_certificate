@@ -114,7 +114,6 @@ export default function GenerateService() {
     }, []);
 
     useEffect(() => {
-        // Generate a report number when the form initializes
         if (!formData.reportNo) {
             const generateReportNo = () => {
                 const date = new Date();
@@ -257,17 +256,15 @@ export default function GenerateService() {
         try {
             setIsGeneratingPDF(true);
             
-            // First ensure the PDF exists
             await axios.get(
                 `http://localhost:5000/api/v1/services/download/${service.serviceId}`,
                 {
-                    responseType: 'blob', // Important for file downloads
+                    responseType: 'blob', 
                     headers: {
                         'Authorization': `Bearer ${yourAccessToken}`
                     }
                 }
             ).then((response) => {
-                // Create blob link to download
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
@@ -275,12 +272,10 @@ export default function GenerateService() {
                 document.body.appendChild(link);
                 link.click();
                 
-                // Clean up
                 link.parentNode?.removeChild(link);
                 window.URL.revokeObjectURL(url);
             });
     
-            // Then send the notification email
             const response = await axios.post(
                 'http://localhost:5000/api/v1/services/sendMail',
                 { serviceId: service.serviceId },

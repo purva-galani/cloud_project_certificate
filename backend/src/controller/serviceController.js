@@ -38,7 +38,6 @@ const createService = async (req, res) => {
             status
         } = req.body;
 
-        // Validate required fields (including engineerRemarks structure)
         if (
             !customerName?.trim() ||
             !customerLocation?.trim() ||
@@ -55,14 +54,14 @@ const createService = async (req, res) => {
             !serialNumberoftheFaultyNonWorkingInstruments?.trim() ||
             !engineerName?.trim() ||
             !status?.trim() ||
-            !engineerRemarks || // Check if exists
-            !Array.isArray(engineerRemarks) || // Must be an array
-            engineerRemarks.length === 0 || // Must not be empty
-            !engineerRemarks.every(remark => ( // Validate each remark
+            !engineerRemarks || 
+            !Array.isArray(engineerRemarks) || 
+            engineerRemarks.length === 0 || 
+            !engineerRemarks.every(remark => ( 
                 remark.serviceSpares?.trim() &&
                 remark.partNo?.trim() &&
                 remark.rate?.trim() &&
-                !isNaN(remark.quantity) && // quantity must be a number
+                !isNaN(remark.quantity) && 
                 remark.poNo?.trim()
             ))
         ) 
@@ -72,7 +71,6 @@ const createService = async (req, res) => {
             });
         }
 
-        // Proceed with saving data
         const newService = new Service({
             customerName: customerName.trim(),
             customerLocation: customerLocation.trim(),
@@ -91,7 +89,7 @@ const createService = async (req, res) => {
                 serviceSpares: remark.serviceSpares.trim(),
                 partNo: remark.partNo.trim(),
                 rate: remark.rate.trim(),
-                quantity: Number(remark.quantity), // Convert to number
+                quantity: Number(remark.quantity), 
                 poNo: remark.poNo.trim()
             })),
             engineerName: engineerName.trim(),
@@ -101,9 +99,9 @@ const createService = async (req, res) => {
         console.log("Saving service to database...");
         await newService.save();
 
-        // Generate PDF (unchanged)
+
         const pdfPath = await generatePDFService(
-            /* ... your existing PDF generation code ... */
+
         );
 
         res.status(201).json({
@@ -163,7 +161,6 @@ const downloadService = async (req, res) => {
             }
         }
 
-        // Set proper headers for file download
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename=service-${service.serviceId}.pdf`);
 
@@ -176,7 +173,7 @@ const downloadService = async (req, res) => {
     }
 };
 
-// Update service
+
 const updateService = async (req, res) => {
     try {
         const { serviceId } = req.params;
@@ -188,7 +185,6 @@ const updateService = async (req, res) => {
             return res.status(404).json({ error: "Service not found" });
         }
 
-        // Validate fields if needed, and apply the updates
         Object.keys(updateData).forEach(key => {
             if (updateData[key] && updateData[key] !== service[key]) {
                 service[key] = updateData[key];
@@ -197,7 +193,6 @@ const updateService = async (req, res) => {
 
         await service.save();
 
-        // Generate new PDF after update
         const pdfPath = await generatePDFService(
             service.customerName,
             service.customerLocation,
@@ -229,12 +224,10 @@ const updateService = async (req, res) => {
     }
 };
 
-// Delete service
 const deleteService = async (req, res) => {
     try {
         const { serviceId } = req.params;
         
-        // Try finding by both _id and serviceId
         const service = await Service.findOne({
             $or: [
                 { _id: serviceId },
@@ -250,13 +243,11 @@ const deleteService = async (req, res) => {
             });
         }
 
-        // Delete PDF file if exists
         const pdfPath = path.join(process.cwd(), "services", `${service.serviceId}.pdf`);
         if (fs.existsSync(pdfPath)) {
             fs.unlinkSync(pdfPath);
         }
 
-        // Delete from database
         await Service.deleteOne({ _id: service._id });
 
         res.status(200).json({ 
@@ -278,13 +269,10 @@ const getServiceById = async (req, res) => {
     try {
         const { serviceId } = req.params;
 
-        // Try finding by both _id and serviceId
         let service;
         if (/^[0-9a-fA-F]{24}$/.test(serviceId)) {
-            // If serviceId is in MongoDB ObjectId format
             service = await Service.findById(serviceId);
         } else {
-            // If it's not in ObjectId format, try by serviceId field
             service = await Service.findOne({ serviceId });
         }
 
@@ -306,13 +294,11 @@ const sendCertificateNotification = async (req, res) => {
             return res.status(400).json({ error: "Service ID is required" });
         }
 
-        // The user is now available from req.user (set by auth middleware)
         const user = req.user;
         if (!user) {
             return res.status(403).json({ error: "Authentication required" });
         }
 
-        // Rest of your existing code...
         let service;
         if (/^[0-9a-fA-F]{24}$/.test(serviceId)) {
             service = await Service.findById(serviceId);
@@ -370,85 +356,6 @@ const sendCertificateNotification = async (req, res) => {
         });
     }
 };  
-// const sendCertificateNotification = async (req, res) => {
-//     try {
-//         const { serviceId } = req.body;
-
-//         if (!serviceId) {
-//             return res.status(400).json({ error: "Service ID is required" });
-//         }
-
-//         // Find the service
-//         let service;
-//         if (/^[0-9a-fA-F]{24}$/.test(serviceId)) {
-//             service = await Service.findById(serviceId);
-//         } else {
-//             service = await Service.findOne({ serviceId });
-//         }
-
-//         if (!service) {
-//             return res.status(404).json({ error: "Service not found" });
-//         }
-
-//         // Get the PDF path
-//         const pdfPath = path.join(process.cwd(), "services", `${service.serviceId}.pdf`);
-
-//         // Check if the PDF exists
-//         if (!fs.existsSync(pdfPath)) {
-//             return res.status(404).json({ error: "PDF certificate not found. Please generate it first." });
-//         }
-
-//         // Create transporter
-//         const transporter = nodemailer.createTransport({
-//             service: "gmail",
-//             auth: {
-//                 user: process.env.EMAIL_USER,
-//                 pass: process.env.EMAIL_PASS,
-//             },
-//         });
-
-//         const defaultRecipient = process.env.DEFAULT_NOTIFICATION_EMAIL;
-//         if (!defaultRecipient) {
-//             return res.status(400).json({ error: "Default notification email not configured" });
-//         }
-
-//         // Email options with attachment
-//         const mailOptions = {
-//             from: process.env.EMAIL_FROM,
-//             to: defaultRecipient,
-//             subject: `Certificate Generated - ${service.serviceId}`,
-//             text: `A new certificate has been generated for ${service.customerName}.\n\n` +
-//                   `Service ID: ${service.serviceId}\n` +
-//                   `Customer: ${service.customerName}\n` +
-//                   `Date: ${service.date.toDateString()}\n\n` +
-//                   `Certificate is attached as a PDF.`,
-//             attachments: [
-//                 {
-//                     filename: `certificate-${service.serviceId}.pdf`,
-//                     path: pdfPath,
-//                     contentType: 'application/pdf'
-//                 }
-//             ]
-//         };
-
-//         // Send the email
-//         await transporter.sendMail(mailOptions);
-
-//         res.status(200).json({
-//             message: "Notification email with certificate sent successfully",
-//             serviceId: service.serviceId,
-//             recipient: defaultRecipient
-//         });
-
-//     } catch (error) {
-//         console.error("Error sending notification email:", error);
-//         res.status(500).json({
-//             error: "Failed to send notification email",
-//             details: error.message
-//         });
-//     }
-// };
-
 
 module.exports ={
     createService,
