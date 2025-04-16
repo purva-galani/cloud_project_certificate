@@ -169,6 +169,7 @@ export default function GenerateService() {
     }, [serviceId, isEditMode, router]);
 
     useEffect(() => {
+        // Generate a report number when the form initializes
         if (!isEditMode && !formData.reportNo) {
             const generateReportNo = () => {
                 const date = new Date();
@@ -201,6 +202,7 @@ export default function GenerateService() {
         fetchServiceEngineers();
     }, []);
 
+    // Rest of your component code remains the same...
     const handleServiceEngineerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedId = e.target.value;
         const selectedEngineer = serviceEngineers.find(engineer => engineer._id === selectedId);
@@ -279,6 +281,8 @@ export default function GenerateService() {
             return;
         }
         
+
+        // Prepare the submission data
         const submissionData = {
             customerName: formData.customerName.trim(),
             customerLocation: formData.customerLocation.trim(),
@@ -300,6 +304,7 @@ export default function GenerateService() {
             status: formData.status
         };
 
+        // Validate required fields
         const requiredFields = [
             'customerName', 'customerLocation', 'contactPerson', 'contactNumber',
             'serviceEngineer', 'date', 'place', 'placeOptions', 'natureOfJob',
@@ -328,7 +333,7 @@ export default function GenerateService() {
                 }
             });
 
-            console.log('API Response:', response.data);
+            console.log('API Response:', response.data); // Log successful response
 
             setService(response.data);
             toast({
@@ -365,7 +370,7 @@ export default function GenerateService() {
 
 const handleDownload = async () => {
         const yourAccessToken = localStorage.getItem("authToken");
-        const userRole = localStorage.getItem("authRole"); 
+        const userRole = localStorage.getItem("authRole"); // <-- Make sure this is saved at login
     
         if (!service?.serviceId) {
             toast({
@@ -379,6 +384,7 @@ const handleDownload = async () => {
         try {
             setIsGeneratingPDF(true);
     
+            // Step 1: Download the PDF
             const response = await axios.get(
                 `http://localhost:5000/api/v1/services/download/${service.serviceId}`,
                 {
@@ -398,6 +404,7 @@ const handleDownload = async () => {
             link.parentNode?.removeChild(link);
             window.URL.revokeObjectURL(url);
     
+            // Step 2: Only admins send the email
             if (userRole === 'admin') {
                 await axios.post(
                     'http://localhost:5000/api/v1/services/sendMail',
@@ -421,7 +428,7 @@ const handleDownload = async () => {
             console.error("Error:", err);
             toast({
                 title: "Error",
-                description: "Failed to download certificate",
+                description: err.response?.data?.error || "Failed to download certificate",
                 variant: "destructive",
             });
         } finally {

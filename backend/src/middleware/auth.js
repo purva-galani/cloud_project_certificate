@@ -12,13 +12,15 @@ const authenticate = async (req, res, next) => {
   const token = authHeader.split(' ')[1];
 
   try {
+    // Verify the token
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || "randome#certificate"
     );
 
-    const role = decoded.role || 'user';
+    const role = decoded.role || 'user'; // default to user if not present
 
+    // Choose the correct model *after* decoding the token
     const Model = role === 'admin' ? Admin : User;
 
     const user = await Model.findById(decoded.userId);
