@@ -199,7 +199,7 @@ export default function GenerateService() {
         }
 
         if (formData.engineerRemarks.length === 0) {
-            return "At least one engineer remark is required.";
+            return "All fields in engineer remarks must be filled.";
         }
 
         for (const remark of formData.engineerRemarks) {
@@ -211,7 +211,6 @@ export default function GenerateService() {
 
         return null;
     };
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -257,180 +256,59 @@ export default function GenerateService() {
     
         try {
             setIsGeneratingPDF(true);
+            
+            // First ensure the PDF exists
+            await axios.get(
+                `http://localhost:5000/api/v1/services/download/${service.serviceId}`,
+                {
+                    responseType: 'blob', // Important for file downloads
+                    headers: {
+                        'Authorization': `Bearer ${yourAccessToken}`
+                    }
+                }
+            ).then((response) => {
+                // Create blob link to download
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `service-${service.serviceId}.pdf`);
+                document.body.appendChild(link);
+                link.click();
+                
+                // Clean up
+                link.parentNode?.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            });
     
-            // === Generate PDF Locally ===
-            const logo = new Image();
-            logo.src = "/img/rps.png";
+            // Then send the notification email
+            const response = await axios.post(
+                'http://localhost:5000/api/v1/services/sendMail',
+                { serviceId: service.serviceId },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${yourAccessToken}`
+                    }
+                }
+            );
     
-            logo.onload = () => {
-                const infoImage = new Image();
-                infoImage.src = "/img/handf.png";
+            toast({
+                title: "Success",
+                description: "Certificate downloaded and email sent successfully",
+                variant: "default",
+            });
     
-                infoImage.onload = async () => {
-                    const doc = new jsPDF();
-                    const pageWidth = doc.internal.pageSize.getWidth();
-                    const pageHeight = doc.internal.pageSize.getHeight();
-    
-                    const leftMargin = 15;
-                    const rightMargin = 15;
-                    const topMargin = 20;
-                    let y = topMargin;
-    
-                    // Logo
-                    doc.addImage(logo, "PNG", leftMargin, y, 50, 15);
-                    y += 20;
-    
-                    // Info Image
-                    doc.addImage(infoImage, "PNG", leftMargin, y, 180, 20);
-                    y += 30;
-    
-                    // Title
-                    doc.setFont("times", "bold").setFontSize(13).setTextColor(0, 51, 153);
-                    doc.text("SERVICE / CALIBRATION / INSTALLATION  JOBREPORT", pageWidth / 2, y, { align: "center" });
-                    y += 10;
-    
-                    // Info Rows
-                    const addRow = (label: string, value: string) => {
-                        const labelOffset = 65;
-                        doc.setFont("times", "bold").setFontSize(10).setTextColor(0);
-                        doc.text(label + ":", leftMargin, y);
-                        doc.setFont("times", "normal").setTextColor(50);
-                        doc.text(value || "N/A", leftMargin + labelOffset, y);
-                        y += 7;
-                    };
-    
-                    // Assuming formData is available
-                    addRow("Customer Name", formData.customerName);
-                    addRow("Customer Location", formData.customerLocation);
-                    addRow("Contact Person", formData.contactPerson);
-                    addRow("Status", formData.status);
-                    addRow("Contact Number", formData.contactNumber);
-                    addRow("Service Engineer", formData.serviceEngineer);
-                    addRow("Date", formData.date);
-                    addRow("Place", formData.place);
-                    addRow("Place Options", formData.placeOptions);
-                    addRow("Nature of Job", formData.natureOfJob);
-                    addRow("Report No.", formData.reportNo);
-                    addRow("Make & Model Number", formData.makeModelNumberoftheInstrumentQuantity);
-                    y += 5;
-                    addRow("Calibrated & Tested OK", formData.serialNumberoftheInstrumentCalibratedOK);
-                    addRow("Sr.No Faulty/Non-Working", formData.serialNumberoftheFaultyNonWorkingInstruments);
-                    y += 10;
-    
-                    // Separator line
-                    doc.setDrawColor(0);
-                    doc.setLineWidth(0.5);
-                    doc.line(leftMargin, y, pageWidth - rightMargin, y);
-    
-                    // === Page 2 ===
-                    doc.addPage();
-                    y = topMargin;
-    
-                    doc.setFont("times", "bold").setFontSize(10).setTextColor(0);
-                    doc.text("ENGINEER REMARKS", leftMargin, y);
-                    y += 8;
-    
-                    const tableHeaders = ["Sr. No.", "Service/Spares", "Part No.", "Rate", "Quantity", "PO No."];
-                    const colWidths = [20, 60, 25, 25, 25, 25];
-                    let x = leftMargin;
-    
-                    // Table headers
-                    tableHeaders.forEach((header, i) => {
-                        doc.rect(x, y, colWidths[i], 8);
-                        doc.text(header, x + 2, y + 6);
-                        x += colWidths[i];
-                    });
-    
-                    y += 8;
-    
-                    formData.engineerRemarks.forEach((item, index) => {
-                        x = leftMargin;
-                        const values = [
-                            String(index + 1),
-                            item.serviceSpares || "",
-                            item.partNo || "",
-                            item.rate || "",
-                            item.quantity || "",
-                            item.poNo || ""
-                        ];
-                        values.forEach((val, i) => {
-                            doc.rect(x, y, colWidths[i], 8);
-                            doc.text(val, x + 2, y + 6);
-                            x += colWidths[i];
-                        });
-                        y += 8;
-    
-                        if (y + 20 > pageHeight) {
-                            doc.addPage();
-                            y = topMargin;
-                        }
-                    });
-    
-                    y += 10;
-                    doc.setFont("times", "normal");
-                    doc.text("Service Engineer", pageWidth - rightMargin - 40, y);
-                    doc.text(formData.serviceEngineer || "", pageWidth - rightMargin - 40, y + 5);
-    
-                    // Generated time
-                    const now = new Date();
-                    const pad = (n: number) => n.toString().padStart(2, "0");
-                    const date = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()}`;
-                    const time = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-                    const printDateTime = `${date} ${time}`;
-                    doc.setFontSize(9).setTextColor(100);
-                    doc.text(`Report Generated On: ${printDateTime}`, leftMargin, pageHeight - 10);
-    
-                    // Save the PDF
-                    doc.save(`service-${service.serviceId}.pdf`);
-    
-                    // === Send Email Notification ===
-                    await axios.post(
-                        'http://localhost:5000/api/v1/services/sendMail',
-                        { serviceId: service.serviceId },
-                        {
-                            headers: {
-                                'Authorization': `Bearer ${yourAccessToken}`
-                            }
-                        }
-                    );
-    
-                    toast({
-                        title: "Success",
-                        description: "PDF generated and email sent successfully.",
-                        variant: "default",
-                    });
-                };
-    
-                infoImage.onerror = () => {
-                    console.error("Failed to load info image.");
-                    alert("Company info image not found. Please check the path.");
-                };
-            };
-    
-            logo.onerror = () => {
-                console.error("Failed to load logo.");
-                alert("Logo image not found. Please check the path.");
-            };
-    
-        } catch (err: unknown) {
-            let errorMessage = "Failed to generate report";
-            if (axios.isAxiosError(err)) {
-                errorMessage = err.response?.data?.error || errorMessage;
-            } else if (err instanceof Error) {
-                errorMessage = err.message;
-            }
-    
+        } catch (err) {
             console.error("Error:", err);
             toast({
                 title: "Error",
-                description: errorMessage,
+                description: err.response?.data?.error || "Failed to download certificate",
                 variant: "destructive",
             });
         } finally {
             setIsGeneratingPDF(false);
         }
     };
-    
+
 
     return (
         <div className="container mx-auto p-4">
@@ -688,7 +566,10 @@ export default function GenerateService() {
                                         type="text"
                                         name="partNo"
                                         value={engineerRemark.partNo}
-                                        onChange={(e) => handleEngineerRemarksChange(index, 'partNo', e.target.value)}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/[^0-9]/g, '');
+                                            handleEngineerRemarksChange(index, 'partNo', value);
+                                        }}
                                         className="w-full p-1 border rounded"
                                     />
                                 </td>
@@ -697,7 +578,10 @@ export default function GenerateService() {
                                         type="text"
                                         name="rate"
                                         value={engineerRemark.rate}
-                                        onChange={(e) => handleEngineerRemarksChange(index, 'rate', e.target.value)}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/[^0-9]/g, '');
+                                            handleEngineerRemarksChange(index, 'rate', value);
+                                        }}
                                         className="w-full p-1 border rounded"
                                     />
                                 </td>
@@ -706,7 +590,10 @@ export default function GenerateService() {
                                         type="text"
                                         name="quantity"
                                         value={engineerRemark.quantity}
-                                        onChange={(e) => handleEngineerRemarksChange(index, 'quantity', e.target.value)}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/[^0-9]/g, '');
+                                            handleEngineerRemarksChange(index, 'quantity', value);
+                                        }}
                                         className="w-full p-1 border rounded"
                                     />
                                 </td>
@@ -715,7 +602,10 @@ export default function GenerateService() {
                                         type="text"
                                         name="poNo"
                                         value={engineerRemark.poNo}
-                                        onChange={(e) => handleEngineerRemarksChange(index, 'poNo', e.target.value)}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(/[^0-9]/g, '');
+                                            handleEngineerRemarksChange(index, 'poNo', value);
+                                        }}
                                         className="w-full p-1 border rounded"
                                     />
                                 </td>
@@ -756,7 +646,7 @@ export default function GenerateService() {
 
             {service && (
                 <div className="mt-4 text-center">
-                    <p className="text-green-600 mb-2">Click here to download the certificate</p>
+                    <p className="text-green-600 mb-2">Click here to download the service report</p>
                     <button
                         onClick={handleDownload}
                         className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"

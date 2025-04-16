@@ -51,12 +51,21 @@ interface Engineer {
     name: string;
 }
 
+const generateCertificateNumber = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+    return `RPS/${year}${month}${day}/${randomNum}`;
+};
+
 export default function AddCategory() {
     const searchParams = useSearchParams();
     const certificateId = searchParams.get('id');
 
     const [formData, setFormData] = useState<CertificateRequest>({
-        certificateNo: "",
+        certificateNo: generateCertificateNumber(), // Auto-generated here
         customerName: "",
         siteLocation: "",
         makeModel: "",
@@ -686,6 +695,15 @@ export default function AddCategory() {
 
                                 </div>
                                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                    <input
+                                        type="text"
+                                        name="certificateNo"
+                                        placeholder="Certificate No."
+                                        value={formData.certificateNo}
+                                        onChange={handleChange}
+                                        readOnly
+                                        className="p-2 border rounded flex-1"
+                                    />
                                     <select
                                         name="status"
                                         value={formData.status}

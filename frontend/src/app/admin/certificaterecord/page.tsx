@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import { useRouter } from 'next/navigation';
 import { toast } from "@/hooks/use-toast"
 import { Button } from "@/components/ui/button"
-import { SearchIcon,  Trash2, Download, ArrowUpIcon, ArrowDownIcon, Edit } from "lucide-react"
+import { SearchIcon, Trash2, Download, ArrowUpIcon, ArrowDownIcon, Edit } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import axios from "axios";
 
@@ -43,7 +43,7 @@ interface Certificate {
     calibrationDueDate: string;
     observations: Observation[];
     engineerName: string;
-    [key: string]: string;
+    [key: string]: any;
 }
 
 type SortDescriptor = {
@@ -86,8 +86,8 @@ export default function CertificateTable() {
     const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
     const [rowsPerPage, setRowsPerPage] = useState(15);
     const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
-        column: "createdAt", 
-        direction: "descending", 
+        column: "createdAt",
+        direction: "descending",
     });
     const [page, setPage] = React.useState(1);
     const router = useRouter();
@@ -154,13 +154,15 @@ export default function CertificateTable() {
             toast({
                 title: "Success",
                 description: "Certificate deleted successfully",
-            });        } catch (error) {
+            });
+        } catch (error) {
             console.error("Error deleting certificate:", error);
             toast({
                 title: "Error",
                 description: "Failed to delete certificate.",
                 variant: "destructive",
-            });        }
+            });
+        }
     };
 
     const [filterValue, setFilterValue] = useState("");
@@ -228,137 +230,137 @@ export default function CertificateTable() {
 
     const handleDownload = (certificateId: string) => {
         setIsDownloading(certificateId);
-      
+
         const certificateToDownload = certificates.find(cert => cert._id === certificateId);
         if (!certificateToDownload) {
-          console.error("Certificate data not found");
-          setIsDownloading(null);
-          return;
+            console.error("Certificate data not found");
+            setIsDownloading(null);
+            return;
         }
-      
+
         const logo = new Image();
         logo.src = "/img/rps.png";
-      
+
         logo.onload = () => {
-          const doc = new jsPDF();
-          const pageWidth = doc.internal.pageSize.getWidth();
-          const pageHeight = doc.internal.pageSize.getHeight();
-      
-          const leftMargin = 15;
-          const rightMargin = 15;
-          const topMargin = 20;
-          const bottomMargin = 20;
-          const contentWidth = pageWidth - leftMargin - rightMargin;
-          let y = topMargin;
-      
-          const logoWidth = 80;
-          const logoHeight = 20;
-          const logoX = leftMargin;
-          doc.addImage(logo, "PNG", logoX, y, logoWidth, logoHeight);
-      
-          y += logoHeight + 10;
-          doc.setFont("times", "bold").setFontSize(16).setTextColor(0, 51, 102);
-          doc.text("CALIBRATION CERTIFICATE", pageWidth / 2, y, { align: "center" });
-      
-          y += 10;
-      
-          const labelX = leftMargin;
-          const labelWidth = 55;
-          const valueX = labelX + labelWidth + 2;
-          const lineGap = 8;
-      
-          const addRow = (labelText: string, value: string) => {
-            doc.setFont("times", "bold").setFontSize(11).setTextColor(0);
-            doc.text(labelText, labelX, y);
-            doc.setFont("times", "normal").setTextColor(50);
-            doc.text(": " + (value || "N/A"), valueX, y);
-            y += lineGap;
-          };
-      
-          addRow("Certificate No.", certificateToDownload.certificateNo);
-          addRow("Customer Name", certificateToDownload.customerName);
-          addRow("Site Location", certificateToDownload.siteLocation);
-          addRow("Make & Model", certificateToDownload.makeModel);
-          addRow("Range", certificateToDownload.range);
-          addRow("Serial No.", certificateToDownload.serialNo);
-          addRow("Calibration Gas", certificateToDownload.calibrationGas);
-          addRow("Gas Canister Details", certificateToDownload.gasCanisterDetails);
-      
-          y += 5;
-          addRow("Date of Calibration", formatDate(certificateToDownload.dateOfCalibration));
-          addRow("Calibration Due Date", formatDate(certificateToDownload.calibrationDueDate));
-          addRow("Status", certificateToDownload.status);
-      
-          y += 5;
-          doc.setDrawColor(180);
-          doc.setLineWidth(0.3);
-          doc.line(leftMargin, y, pageWidth - rightMargin, y);
-          y += 10;
-      
-          doc.setFont("times", "bold").setFontSize(12).setTextColor(0, 51, 102);
-          doc.text("OBSERVATIONS", leftMargin, y);
-          y += 10;
-      
-          const colWidths = [20, 70, 40, 40];
-          const headers = ["Sr. No.", "Concentration of Gas", "Reading Before", "Reading After"];
-          let x = leftMargin;
-      
-          doc.setFont("times", "bold").setFontSize(10).setTextColor(0);
-          headers.forEach((header, i) => {
-            doc.rect(x, y - 5, colWidths[i], 8);
-            doc.text(header, x + 2, y);
-            x += colWidths[i];
-          });
-          y += 8;
-      
-          doc.setFont("times", "normal").setFontSize(10);
-          certificateToDownload.observations.forEach((obs, index) => {
+            const doc = new jsPDF();
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+
+            const leftMargin = 15;
+            const rightMargin = 15;
+            const topMargin = 20;
+            const bottomMargin = 20;
+            const contentWidth = pageWidth - leftMargin - rightMargin;
+            let y = topMargin;
+
+            const logoWidth = 80;
+            const logoHeight = 20;
+            const logoX = leftMargin;
+            doc.addImage(logo, "PNG", logoX, y, logoWidth, logoHeight);
+
+            y += logoHeight + 10;
+            doc.setFont("times", "bold").setFontSize(16).setTextColor(0, 51, 102);
+            doc.text("CALIBRATION CERTIFICATE", pageWidth / 2, y, { align: "center" });
+
+            y += 10;
+
+            const labelX = leftMargin;
+            const labelWidth = 55;
+            const valueX = labelX + labelWidth + 2;
+            const lineGap = 8;
+
+            const addRow = (labelText: string, value: string) => {
+                doc.setFont("times", "bold").setFontSize(11).setTextColor(0);
+                doc.text(labelText, labelX, y);
+                doc.setFont("times", "normal").setTextColor(50);
+                doc.text(": " + (value || "N/A"), valueX, y);
+                y += lineGap;
+            };
+
+            addRow("Certificate No.", certificateToDownload.certificateNo);
+            addRow("Customer Name", certificateToDownload.customerName);
+            addRow("Site Location", certificateToDownload.siteLocation);
+            addRow("Make & Model", certificateToDownload.makeModel);
+            addRow("Range", certificateToDownload.range);
+            addRow("Serial No.", certificateToDownload.serialNo);
+            addRow("Calibration Gas", certificateToDownload.calibrationGas);
+            addRow("Gas Canister Details", certificateToDownload.gasCanisterDetails);
+
+            y += 5;
+            addRow("Date of Calibration", formatDate(certificateToDownload.dateOfCalibration));
+            addRow("Calibration Due Date", formatDate(certificateToDownload.calibrationDueDate));
+            addRow("Status", certificateToDownload.status);
+
+            y += 5;
+            doc.setDrawColor(180);
+            doc.setLineWidth(0.3);
+            doc.line(leftMargin, y, pageWidth - rightMargin, y);
+            y += 10;
+
+            doc.setFont("times", "bold").setFontSize(12).setTextColor(0, 51, 102);
+            doc.text("OBSERVATIONS", leftMargin, y);
+            y += 10;
+
+            const colWidths = [20, 70, 40, 40];
+            const headers = ["Sr. No.", "Concentration of Gas", "Reading Before", "Reading After"];
             let x = leftMargin;
-            const rowY = y + index * 8;
-      
-            const rowData = [
-              `${index + 1}`,
-              obs.gas || "",
-              obs.before || "",
-              obs.after || ""
-            ];
-      
-            rowData.forEach((text, colIndex) => {
-              doc.rect(x, rowY - 6, colWidths[colIndex], 8);
-              doc.text(text, x + 2, rowY);
-              x += colWidths[colIndex];
+
+            doc.setFont("times", "bold").setFontSize(10).setTextColor(0);
+            headers.forEach((header, i) => {
+                doc.rect(x, y - 5, colWidths[i], 8);
+                doc.text(header, x + 2, y);
+                x += colWidths[i];
             });
-          });
-      
-          y += certificateToDownload.observations.length * 8 + 15;
-      
-          const conclusion = "The above-mentioned Gas Detector was calibrated successfully, and the result confirms that the performance of the instrument is within acceptable limits.";
-          doc.setFont("times", "normal").setFontSize(10).setTextColor(0);
-          const conclusionLines = doc.splitTextToSize(conclusion, contentWidth);
-          doc.text(conclusionLines, leftMargin, y);
-          y += conclusionLines.length * 6 + 15;
-      
-          doc.setFont("times", "bold");
-          doc.text("Tested & Calibrated By", pageWidth - rightMargin, y, { align: "right" });
-          doc.setFont("times", "normal");
-          doc.text(certificateToDownload.engineerName || "________________", pageWidth - rightMargin, y + 10, { align: "right" });
-      
-          doc.setDrawColor(180);
-          doc.line(leftMargin, pageHeight - bottomMargin - 10, pageWidth - rightMargin, pageHeight - bottomMargin - 10);
-      
-          doc.setFontSize(8).setTextColor(100);
-          doc.text("This certificate is electronically generated and does not require a physical signature.", leftMargin, pageHeight - bottomMargin - 5);
-          doc.text(`Generated on: ${new Date().toLocaleString()}`, leftMargin, pageHeight - bottomMargin);
-      
-          doc.save(`calibration-certificate-${certificateToDownload.certificateNo}.pdf`);
-          setIsDownloading(null);
+            y += 8;
+
+            doc.setFont("times", "normal").setFontSize(10);
+            certificateToDownload.observations.forEach((obs, index) => {
+                let x = leftMargin;
+                const rowY = y + index * 8;
+
+                const rowData = [
+                    `${index + 1}`,
+                    obs.gas || "",
+                    obs.before || "",
+                    obs.after || ""
+                ];
+
+                rowData.forEach((text, colIndex) => {
+                    doc.rect(x, rowY - 6, colWidths[colIndex], 8);
+                    doc.text(text, x + 2, rowY);
+                    x += colWidths[colIndex];
+                });
+            });
+
+            y += certificateToDownload.observations.length * 8 + 15;
+
+            const conclusion = "The above-mentioned Gas Detector was calibrated successfully, and the result confirms that the performance of the instrument is within acceptable limits.";
+            doc.setFont("times", "normal").setFontSize(10).setTextColor(0);
+            const conclusionLines = doc.splitTextToSize(conclusion, contentWidth);
+            doc.text(conclusionLines, leftMargin, y);
+            y += conclusionLines.length * 6 + 15;
+
+            doc.setFont("times", "bold");
+            doc.text("Tested & Calibrated By", pageWidth - rightMargin, y, { align: "right" });
+            doc.setFont("times", "normal");
+            doc.text(certificateToDownload.engineerName || "________________", pageWidth - rightMargin, y + 10, { align: "right" });
+
+            doc.setDrawColor(180);
+            doc.line(leftMargin, pageHeight - bottomMargin - 10, pageWidth - rightMargin, pageHeight - bottomMargin - 10);
+
+            doc.setFontSize(8).setTextColor(100);
+            doc.text("This certificate is electronically generated and does not require a physical signature.", leftMargin, pageHeight - bottomMargin - 5);
+            doc.text(`Generated on: ${new Date().toLocaleString()}`, leftMargin, pageHeight - bottomMargin);
+
+            doc.save(`calibration-certificate-${certificateToDownload.certificateNo}.pdf`);
+            setIsDownloading(null);
         };
-      
+
         logo.onerror = () => {
-          console.error("Logo image not found. Please check the path.");
-          setIsDownloading(null);
+            console.error("Logo image not found. Please check the path.");
+            setIsDownloading(null);
         };
-      };
+    };
 
 
     const onNextPage = React.useCallback(() => {

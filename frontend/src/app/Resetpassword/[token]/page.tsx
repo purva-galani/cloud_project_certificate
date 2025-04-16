@@ -25,19 +25,19 @@ export default function ResetPassword() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-        toast({
-            title: "Error",
-            description: "Passwords do not match.",
-            variant: "destructive",
-        });       return;
+      toast({
+        title: "Error",
+        description: "Passwords do not match.",
+        variant: "destructive",
+      }); return;
     }
 
     if (!isPasswordStrong(password)) {
-        toast({
-            title: "Error",
-            description: "Passwords do not match.",
-            variant: "destructive",
-        });       return;
+      toast({
+        title: "Error",
+        description: "Passwords do not match.",
+        variant: "destructive",
+      }); return;
     }
 
     setIsSubmitting(true);
@@ -51,16 +51,17 @@ export default function ResetPassword() {
         setPasswordReset(true);
       } else {
         toast({
-            title: "Error",
-            description: "Passwords do not match.",
-            variant: "destructive",
-        });       }
+          title: "Error",
+          description: "Passwords do not match.",
+          variant: "destructive",
+        });
+      }
     } catch (error: any) {
-        toast({
-            title: "Error",
-            description: "Passwords do not match.",
-            variant: "destructive",
-        }); 
+      toast({
+        title: "Error",
+        description: "Passwords do not match.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }

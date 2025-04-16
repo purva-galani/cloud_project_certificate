@@ -44,9 +44,18 @@ interface engineer {
   name: string;
 }
 
+const generateCertificateNumber = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit random number
+  return `RPS/${year}${month}${day}/${randomNum}`;
+};
+
 export default function GenerateCertificate() {
   const [formData, setFormData] = useState<CertificateRequest>({
-    certificateNo: "",
+    certificateNo: generateCertificateNumber(), // Auto-generated here
     customerName: "",
     siteLocation: "",
     makeModel: "",
@@ -56,7 +65,7 @@ export default function GenerateCertificate() {
     gasCanisterDetails: "",
     dateOfCalibration: new Date().toISOString(),
     calibrationDueDate: new Date().toISOString(),
-    
+
     observations: [{ gas: "", before: "", after: "" }],
     engineerId: "",
     engineerName: "",
@@ -212,14 +221,14 @@ export default function GenerateCertificate() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-  
+
     try {
       const submissionData = {
         ...formData,
         dateOfCalibration: startDate ? new Date(startDate).toISOString() : formData.dateOfCalibration,
         calibrationDueDate: endDate ? new Date(endDate).toISOString() : formData.calibrationDueDate
       };
-  
+
       const response = await axios.post(
         "http://localhost:5000/api/v1/certificates/generateCertificate",
         submissionData
@@ -232,7 +241,7 @@ export default function GenerateCertificate() {
       setLoading(false);
     }
   };
-  
+
 
   const handleDownload = () => {
     const logo = new Image();
@@ -508,6 +517,15 @@ export default function GenerateCertificate() {
           </select>
         </div>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <input
+            type="text"
+            name="certificateNo"
+            placeholder="Certificate No."
+            value={formData.certificateNo}
+            onChange={handleChange}
+            readOnly
+            className="p-2 border rounded flex-1"
+          />
           <select
             name="status"
             value={formData.status}

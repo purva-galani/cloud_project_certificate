@@ -113,14 +113,14 @@ export default function ContactPersonDetailsTable() {
 
             setContactPersons(prev => prev.filter(contact => contact._id !== contactPersonId));
             toast({
-                title: "Delete Successful!",
-                description: "Contact person deleted successfully!",
+                title: "Contact Deleted",
+                description: "The contact has been successfully deleted",
             });
         } catch (error) {
             console.error("Error deleting contact person:", error);
             toast({
                 title: "Error",
-                description: "Failed to delete contact person.",
+                description: "Could not delete contact person. Please try again.",
                 variant: "destructive",
             });
         }

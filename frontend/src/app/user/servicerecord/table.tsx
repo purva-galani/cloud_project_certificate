@@ -26,6 +26,7 @@ interface Service {
     serialNumberoftheInstrumentCalibratedOK: string;
     serialNumberoftheFaultyNonWorkingInstruments: string;
     engineerName: string;
+    createdAt: string;
 }
 
 type SortDescriptor = {
@@ -111,7 +112,7 @@ export default function Servicetable() {
             }
 
             // Sort by createdAt in descending order (newest first)
-            servicesData.sort((a, b) =>
+            servicesData.sort((a: { createdAt: string | number | Date; }, b: { createdAt: string | number | Date; }) =>
                 new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
             );
 
@@ -454,7 +455,7 @@ export default function Servicetable() {
         if (columnKey === "actions") {
             return (
                 <div className="relative flex items-center gap-2">
-                    <Tooltip content="Download Report">
+                    <Tooltip>
                         <Button
                             variant="ghost"
                             size="sm"

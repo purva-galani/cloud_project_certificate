@@ -39,7 +39,7 @@ interface Certificate {
   calibrationDueDate: string;
   observations: Observation[];
   engineerName: string;
-  [key: string]: string;
+  [key: string]: any;
 }
 
 type SortDescriptor = {

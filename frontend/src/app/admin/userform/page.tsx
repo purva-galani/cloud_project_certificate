@@ -73,7 +73,7 @@ export default function RegisterPage() {
   const handleRegister = async (values: z.infer<typeof registerSchema>) => {
     setLoading(true);
     setServerError(""); // you can still keep this if you want field-level error too
-  
+
     try {
       const response = await fetch("http://localhost:5000/api/v1/users/register", {
         method: "POST",
@@ -82,9 +82,9 @@ export default function RegisterPage() {
         },
         body: JSON.stringify(values),
       });
-  
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         toast({
           title: "Registration failed",
@@ -111,7 +111,8 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
-  
+
+
   return (
     <SidebarProvider>
       <AdminSidebar />

@@ -190,7 +190,6 @@ export default function AdminContactTable() {
             const first = a[sortDescriptor.column as keyof ContactPerson] || "";
             const second = b[sortDescriptor.column as keyof ContactPerson] || "";
 
-            // Case-insensitive string comparison
             const cmp = String(first).localeCompare(String(second), undefined, { sensitivity: 'base' });
 
             return sortDescriptor.direction === "descending" ? -cmp : cmp;

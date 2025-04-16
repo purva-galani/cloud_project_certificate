@@ -11,7 +11,7 @@ import axios from "axios";
 import { toast } from "@/hooks/use-toast";
 import "react-toastify/dist/ReactToastify.css"
 import { ReloadIcon } from "@radix-ui/react-icons"
-import { Eye, EyeOff } from "react-feather"
+import { Eye, EyeOff } from "lucide-react"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
@@ -23,9 +23,10 @@ export function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter()
 
+
   const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
       toast({
         title: "Error",
@@ -34,9 +35,9 @@ export function LoginForm() {
       });
       return;
     }
-  
+
     setIsSubmitting(true);
-  
+
     try {
       const response = await axios.post(
         "http://localhost:5000/api/v1/users/forgot-password",
@@ -45,13 +46,13 @@ export function LoginForm() {
           headers: { "Content-Type": "application/json" },
         }
       );
-  
+
       setEmailSent(true);
       toast({
         title: "Success",
         description: response.data.message,
       });
-  
+
     } catch (error: any) {
       console.error("Forgot password error:", error);
       setEmailSent(true);
@@ -77,6 +78,7 @@ export function LoginForm() {
     try {
       setLoading(true);
 
+      // User Login Attempt
       const userResponse = await fetch("http://localhost:5000/api/v1/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -88,7 +90,7 @@ export function LoginForm() {
       if (userResponse.ok) {
         localStorage.setItem("userId", userData.user.id);
         localStorage.setItem("authToken", userData.accessToken);
-        
+
         toast({
           title: "Login successful",
           description: "You are now on a dashboard",
@@ -97,6 +99,7 @@ export function LoginForm() {
         return;
       }
 
+      // Admin Login Attempt (Only if user login fails)
       const adminResponse = await fetch("http://localhost:5000/api/v1/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -118,6 +121,7 @@ export function LoginForm() {
         return;
       }
 
+      // If both logins fail
       toast({
         title: "Login failed",
         description: userData.message || adminData.message || "Invalid credentials",
@@ -137,70 +141,70 @@ export function LoginForm() {
 
   return (
     <div>
-    {isForgotPassword ? (
-      emailSent ? (
-        <div className="border border-neutral-300 dark:border-neutral-700 rounded-xl p-6 shadow-sm">
-          <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-            Check your email
-          </h2>
-          <p className="text-neutral-600 text-sm mt-2 dark:text-neutral-300">
-            If an account exists with this email, you'll receive a password reset link.
-          </p>
-          <p
-            className="flex items-center justify-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:underline cursor-pointer mt-4"
-            onClick={() => {
-              setIsForgotPassword(false);
-              setEmailSent(false);
-            }}
-          >
-            Back to Login
-          </p>
-        </div>
-      ) : (
-        <div className="border border-neutral-300 dark:border-neutral-700 rounded-xl p-6 shadow-sm">
-          <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-            Forgot Password
-          </h2>
-          <p className="text-neutral-600 text-sm mt-2 dark:text-neutral-300">
-            Enter your email address to receive a password reset link
-          </p>
-          <form onSubmit={handleForgotPasswordSubmit} className="my-8">
-            <div className="mb-4">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="example@gmail.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-            <Button
-              className="w-full"
-              type="submit"
-              disabled={isSubmitting}
+      {isForgotPassword ? (
+        emailSent ? (
+          <div className="border border-neutral-300 dark:border-neutral-700 rounded-xl p-6 shadow-sm">
+            <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+              Check your email
+            </h2>
+            <p className="text-neutral-600 text-sm mt-2 dark:text-neutral-300">
+              If an account exists with this email, you'll receive a password reset link.
+            </p>
+            <p
+              className="flex items-center justify-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:underline cursor-pointer mt-4"
+              onClick={() => {
+                setIsForgotPassword(false);
+                setEmailSent(false);
+              }}
             >
-              {isSubmitting ? (
-                <>
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                "Send Reset Link"
-              )}
-            </Button>
-          </form>
-          <p
-            className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-            onClick={() => setIsForgotPassword(false)}
-          >
-            Back to Login
-          </p>
-        </div>
-      )
-    ): (
+              Back to Login
+            </p>
+          </div>
+        ) : (
+          <div className="border border-neutral-300 dark:border-neutral-700 rounded-xl p-6 shadow-sm">
+            <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+              Forgot Password
+            </h2>
+            <p className="text-neutral-600 text-sm mt-2 dark:text-neutral-300">
+              Enter your email address to receive a password reset link
+            </p>
+            <form onSubmit={handleForgotPasswordSubmit} className="my-8">
+              <div className="mb-4">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="example@gmail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={isSubmitting}
+                />
+              </div>
+              <Button
+                className="w-full"
+                type="submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  "Send Reset Link"
+                )}
+              </Button>
+            </form>
+            <p
+              className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+              onClick={() => setIsForgotPassword(false)}
+            >
+              Back to Login
+            </p>
+          </div>
+        )
+      ) : (
         <>
           <Card className="w-[350px]">
             <CardHeader>
@@ -248,7 +252,7 @@ export function LoginForm() {
                 {loading ? (
                   <>
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                    Logging in...
+                    Please wait...
                   </>
                 ) : (
                   "Login"

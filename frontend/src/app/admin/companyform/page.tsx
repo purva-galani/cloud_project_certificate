@@ -40,6 +40,7 @@ export default function AddCategory() {
     const certificateId = searchParams.get('id');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
+
     const form = useForm<z.infer<typeof companySchema>>({
         resolver: zodResolver(companySchema),
         defaultValues: {

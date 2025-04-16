@@ -276,10 +276,11 @@ export default function GenerateService() {
             }));
 
         if (processedRemarks.length === 0) {
-            setError("Please add at least one valid engineer remark.");
+            setError("All fields in engineer remarks must be filled.");
             setLoading(false);
             return;
         }
+        
 
         // Prepare the submission data
         const submissionData = {
@@ -856,7 +857,10 @@ export default function GenerateService() {
                                                         type="text"
                                                         name="partNo"
                                                         value={engineerRemark.partNo}
-                                                        onChange={(e) => handleengineerRemarksChange(index, 'partNo', e.target.value)}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value.replace(/[^0-9]/g, '');
+                                                            handleengineerRemarksChange(index, 'partNo', value);
+                                                        }}                                                        
                                                         className="w-full p-1 border rounded"
                                                     />
                                                 </td>
@@ -865,7 +869,10 @@ export default function GenerateService() {
                                                         type="text"
                                                         name="rate"
                                                         value={engineerRemark.rate}
-                                                        onChange={(e) => handleengineerRemarksChange(index, 'rate', e.target.value)}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value.replace(/[^0-9]/g, '');
+                                                            handleengineerRemarksChange(index, 'rate', value);
+                                                        }}
                                                         className="w-full p-1 border rounded"
                                                     />
                                                 </td>
@@ -874,7 +881,10 @@ export default function GenerateService() {
                                                         type="text"
                                                         name="quantity"
                                                         value={engineerRemark.quantity}
-                                                        onChange={(e) => handleengineerRemarksChange(index, 'quantity', e.target.value)}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value.replace(/[^0-9]/g, '');
+                                                            handleengineerRemarksChange(index, 'quantity', value);
+                                                        }}
                                                         className="w-full p-1 border rounded"
                                                     />
                                                 </td>
@@ -883,7 +893,10 @@ export default function GenerateService() {
                                                         type="text"
                                                         name="poNo"
                                                         value={engineerRemark.poNo}
-                                                        onChange={(e) => handleengineerRemarksChange(index, 'poNo', e.target.value)}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value.replace(/[^0-9]/g, '');
+                                                            handleengineerRemarksChange(index, 'poNo', value);
+                                                        }}
                                                         className="w-full p-1 border rounded"
                                                     />
                                                 </td>

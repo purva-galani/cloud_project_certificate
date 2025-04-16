@@ -472,8 +472,8 @@ export default function AdminServiceTable() {
             console.log("Delete response:", response.data);
 
             toast({
-                title: "Service Deleted",
-                description: "Service successfully deleted",
+                title: "Success",
+                description: "Service deleted successfully",
                 variant: "default",
             });
             await fetchServices();
@@ -526,7 +526,7 @@ export default function AdminServiceTable() {
         if (columnKey === "actions") {
             return (
                 <div className="relative flex items-center gap-2">
-                    <Tooltip content="Download Report">
+                    <Tooltip>
                         <Button
                             variant="ghost"
                             size="sm"

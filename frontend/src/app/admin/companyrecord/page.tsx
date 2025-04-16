@@ -128,14 +128,14 @@ export default function CompanyDetailsTable() {
 
             setCompanies(prev => prev.filter(company => company._id !== companyId));
             toast({
-                title: "Delete Successful!",
-                description: "Company deleted successfully!",
+                title: "Company Deleted",
+                description: "The company has been successfully deleted",
             });        
         } catch (error) {
             console.error("Error deleting company:", error);
             toast({
-                title: "Delete Successful!",
-                description: "Company deleted successfully!",
+                title: "Error",
+                description: "Could not delete company. Please try again.",
             });       
          }
     };

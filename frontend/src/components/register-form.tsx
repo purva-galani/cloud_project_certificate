@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Eye, EyeOff } from "react-feather"; 
+import { Eye, EyeOff } from "react-feather";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
 export function RegisterForm() {
@@ -17,7 +17,7 @@ export function RegisterForm() {
     password: "",
     confirmPassword: ""
   });
-  
+
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -26,7 +26,7 @@ export function RegisterForm() {
     confirmPassword: "",
     form: ""
   });
-  
+
   const [touched, setTouched] = useState({
     name: false,
     email: false,
@@ -34,7 +34,7 @@ export function RegisterForm() {
     password: false,
     confirmPassword: false
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -43,23 +43,23 @@ export function RegisterForm() {
   // Validate form fields
   const validateField = (name: string, value: string) => {
     let error = "";
-    
+
     switch (name) {
       case "name":
         if (!value.trim()) error = "Required";
         else if (value.length < 1) error = "Name must be at least 1 character";
         break;
-        
+
       case "email":
         if (!value) error = "Required";
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = "Invalid email format";
         break;
-        
+
       case "contact":
         if (!value) error = "Required";
         else if (!/^\d{10,15}$/.test(value)) error = "Invalid contact number (10-15 digits required)";
         break;
-        
+
       case "password":
         if (!value) error = "Required";
         else if (value.length < 8) error = "Password must be at least 8 characters";
@@ -68,13 +68,13 @@ export function RegisterForm() {
         else if (!/[0-9]/.test(value)) error = "Password must contain at least one number";
         else if (!/[^A-Za-z0-9]/.test(value)) error = "Password must contain at least one special character";
         break;
-        
+
       case "confirmPassword":
         if (!value) error = "Required";
         else if (value !== formData.password) error = "Password do not match";
         break;
     }
-    
+
     return error;
   };
 
@@ -88,21 +88,21 @@ export function RegisterForm() {
       confirmPassword: validateField("confirmPassword", formData.confirmPassword),
       form: ""
     };
-    
+
     setErrors(newErrors);
-    
+
     return !Object.values(newErrors).some(error => error !== "");
   };
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    
+
     // Validate field if it's been touched
     if (touched[name as keyof typeof touched]) {
       setErrors(prev => ({
@@ -116,13 +116,13 @@ export function RegisterForm() {
   // Handle blur events (mark fields as touched)
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name } = e.target;
-    
+
     if (!touched[name as keyof typeof touched]) {
       setTouched(prev => ({
         ...prev,
         [name]: true
       }));
-      
+
       // Validate the field
       setErrors(prev => ({
         ...prev,
@@ -157,7 +157,7 @@ export function RegisterForm() {
 
     // Validate the entire form
     const isValid = validateForm();
-    
+
     if (!isValid) {
       return;
     }
@@ -301,18 +301,18 @@ export function RegisterForm() {
         </div>
       </CardContent>
       <CardFooter>
-        <Button 
-          className="w-full" 
-          onClick={handleRegister} 
+        <Button
+          className="w-full"
+          onClick={handleRegister}
           disabled={loading || !isFormValid()}
-        >    
+        >
           {loading ? (
             <>
               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
               Registering...
             </>
           ) : (
-          "Register"
+            "Register"
           )}
         </Button>
       </CardFooter>

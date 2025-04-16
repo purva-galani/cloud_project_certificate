@@ -23,7 +23,7 @@ interface CertificateRequest {
 
 interface Model {
     id: string;
-    _id?: string; 
+    _id?: string;
     model_name: string;
     range: string;
 }
@@ -129,25 +129,25 @@ export default function AddModel() {
                         range: newRange,
                     }),
                 });
-    
+
                 const result = await response.json();
                 if (response.ok) {
                     const newId = result._id || result.id;
                     if (!newId) {
                         throw new Error("No ID returned from server");
                     }
-                    
-                    setModels(prevModels => [...prevModels, { 
-                        id: newId, 
-                        model_name: newModel, 
-                        range: newRange 
+
+                    setModels(prevModels => [...prevModels, {
+                        id: newId,
+                        model_name: newModel,
+                        range: newRange
                     }]);
-                    
+
                     setNewModel("");
                     setNewRange("");
                     toast({
-                        title: "Add Successful!",
-                        description: "Model and range added successfully!",
+                        title: "Model and Range Submitted",
+                        description: "The model and range has been successfully created",
                     });
                 } else {
                     throw new Error(result.error || "Failed to add model");
@@ -165,7 +165,7 @@ export default function AddModel() {
         } else {
             toast({
                 title: "Warning",
-                description: "Please fill both the model and range",
+                description: "Fill both the model and range",
                 variant: "default",
             });
         }
@@ -189,8 +189,8 @@ export default function AddModel() {
                     setEngineers(prev => [...prev, { id: newId, name: newEngineer }]);
                     setNewEngineer("");
                     toast({
-                        title: "Add Successful!",
-                        description: "Engineer added successfully!",
+                        title: "Engineer Submitted",
+                        description: "The engineer has been successfully created",
                     });
                 } else {
                     throw new Error(result.error || "Failed to add engineer");
@@ -208,7 +208,7 @@ export default function AddModel() {
         } else {
             toast({
                 title: "Warning",
-                description: "Please enter an engineer name",
+                description: "Enter an engineer name",
                 variant: "default",
             });
         }
@@ -232,8 +232,8 @@ export default function AddModel() {
                     setServiceEngineers(prev => [...prev, { id: newId, name: newServiceEngineer }]);
                     setNewServiceEngineer("");
                     toast({
-                        title: "Add Successful!",
-                        description: "Service engineer added successfully!",
+                        title: "Service Engineer Submitted",
+                        description: "The service engineer has been successfully created",
                     });
                 } else {
                     throw new Error(result.error || "Failed to add service engineer");
@@ -251,7 +251,7 @@ export default function AddModel() {
         } else {
             toast({
                 title: "Warning",
-                description: "Please enter a service engineer name",
+                description: "Enter a service engineer name",
                 variant: "default",
             });
         }
@@ -291,35 +291,35 @@ export default function AddModel() {
             });
             return;
         }
-    
-        if (!window.confirm("Are you sure you want to delete this model?")) {
+
+        if (!window.confirm("Are you sure you want to delete this model and range?")) {
             return;
         }
-    
+
         setDeleteLoading({ model: id });
-            try {
+        try {
             const response = await fetch(`http://localhost:5000/api/v1/addcategory/deleteCategory/${id}`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" }
             });
-    
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || "Failed to delete category");
             }
-    
+
             setModels(prevModels => prevModels.filter(model => model.id !== id));
-    
+
             setFormData(prev => {
                 const deletedModel = models.find(m => m.id === id);
                 return deletedModel && prev.makeModel === deletedModel.model_name
                     ? { ...prev, makeModel: "", range: "" }
                     : prev;
             });
-    
+
             toast({
-                title: "Delete Successful!",
-                description: "Model and range deleted successfully!",
+                title: "Model and Range Deleted",
+                description: "The model and range has been successfully deleted",
             });
         } catch (error) {
             console.error("Delete error:", error);
@@ -360,14 +360,14 @@ export default function AddModel() {
             }
 
             setEngineers(prev => prev.filter(engineer => engineer.id !== id));
-            
+
             if (selectedEngineer === id) {
                 setSelectedEngineer("");
             }
 
             toast({
-                title: "Delete Successful!",
-                description: "Engineer deleted successfully!",
+                title: "Engineer Deleted",
+                description: "The engineer has been successfully deleted",
             });
         } catch (error) {
             console.error("Delete error:", error);
@@ -408,14 +408,14 @@ export default function AddModel() {
             }
 
             setServiceEngineers(prev => prev.filter(engineer => engineer.id !== id));
-            
+
             if (selectedServiceEngineer === id) {
                 setSelectedServiceEngineer("");
             }
 
             toast({
-                title: "Delete Successful!",
-                description: "Service engineer deleted successfully!",
+                title: "Service Engineer Deleted",
+                description: "The service engineer has been successfully deleted",
             });
         } catch (error) {
             console.error("Delete error:", error);
@@ -472,9 +472,9 @@ export default function AddModel() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                        <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-                            <>
-                                <h2 className="text-lg font-bold mt-4">Add New Model and Range</h2>
+                            <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+                                <>
+                                    <h2 className="text-lg font-bold mt-4 text-center">Create New Model and Range</h2>
                                     <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
                                         {models.length > 0 ? (
                                             models.map((model) => (
@@ -492,25 +492,25 @@ export default function AddModel() {
                                             ))
                                         ) : (
                                             <div className="p-2 text-center text-gray-500">
-                                            No models available
+                                                Create New Model and Range
                                             </div>
                                         )}
                                     </div>
                                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                         <div className="relative">
-                                        <select
-                                            name="makeModel"
-                                            value={formData.makeModel}
-                                            onChange={handleChange}
-                                            className="p-2 border rounded w-full"
-                                        >
-                                            <option value="">Select Make and Model</option>
-                                            {models.map((model) => (
-                                                <option key={`option-${model.id}`} value={model.model_name}>
-                                                    {model.model_name}
-                                                </option>
-                                            ))}
-                                        </select>
+                                            <select
+                                                name="makeModel"
+                                                value={formData.makeModel}
+                                                onChange={handleChange}
+                                                className="p-2 border rounded w-full"
+                                            >
+                                                <option value="">Select Model</option>
+                                                {models.map((model) => (
+                                                    <option key={`option-${model.id}`} value={model.model_name}>
+                                                        {model.model_name}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </div>
                                         <input
                                             type="text"
@@ -525,14 +525,14 @@ export default function AddModel() {
                                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                         <input
                                             type="text"
-                                            placeholder="New Model"
+                                            placeholder="Create Model"
                                             value={newModel}
                                             onChange={(e) => setNewModel(e.target.value)}
                                             className="p-2 border rounded"
                                         />
                                         <input
                                             type="text"
-                                            placeholder="New Range"
+                                            placeholder="Create Range"
                                             value={newRange}
                                             onChange={(e) => setNewRange(e.target.value)}
                                             className="p-2 border rounded"
@@ -544,12 +544,12 @@ export default function AddModel() {
                                         className="bg-blue-950 hover:bg-blue-900 text-white p-2 rounded-md w-full"
                                         disabled={loading}
                                     >
-                                        {loading ? 'Adding...' : 'Add New Model and Range'}
+                                        {loading ? 'Creating...' : 'Create New Model and Range'}
                                     </button>
                                 </>
 
                                 <>
-                                    <h2 className="text-lg font-bold mt-4">Engineers</h2>
+                                    <h2 className="text-lg font-bold mt-4 text-center">Create New Engineer</h2>
                                     <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
                                         {engineers.length > 0 ? (
                                             engineers.map((engineer) => (
@@ -567,7 +567,7 @@ export default function AddModel() {
                                             ))
                                         ) : (
                                             <div className="p-2 text-center text-gray-500">
-                                                No engineers available
+                                                Create a new engineer
                                             </div>
                                         )}
                                     </div>
@@ -599,13 +599,13 @@ export default function AddModel() {
                                         className="bg-blue-950 hover:bg-blue-900 text-white p-2 rounded-md w-full"
                                         disabled={loading}
                                     >
-                                        {loading ? "Adding..." : "Add Engineer"}
+                                        {loading ? "Creating..." : "Create Engineer"}
                                     </button>
                                 </>
 
                                 {/* Service Engineer Section */}
                                 <>
-                                    <h2 className="text-lg font-bold mt-4">Service Engineers</h2>
+                                    <h2 className="text-lg font-bold mt-4 text-center">Create New Service Engineer</h2>
                                     <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
                                         {serviceEngineers.length > 0 ? (
                                             serviceEngineers.map((engineer) => (
@@ -623,7 +623,7 @@ export default function AddModel() {
                                             ))
                                         ) : (
                                             <div className="p-2 text-center text-gray-500">
-                                                No service engineers available
+                                                Create a new service engineer
                                             </div>
                                         )}
                                     </div>
@@ -655,7 +655,7 @@ export default function AddModel() {
                                         className="bg-blue-950 hover:bg-blue-900 text-white p-2 rounded-md w-full"
                                         disabled={loading}
                                     >
-                                        {loading ? "Adding..." : "Add Service Engineer"}
+                                        {loading ? "Creating..." : "Create Service Engineer"}
                                     </button>
                                 </>
                             </form>
