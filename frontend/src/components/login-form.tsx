@@ -23,7 +23,6 @@ export function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter()
 
-
   const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -78,7 +77,6 @@ export function LoginForm() {
     try {
       setLoading(true);
 
-      // User Login Attempt
       const userResponse = await fetch("http://localhost:5000/api/v1/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -99,7 +97,6 @@ export function LoginForm() {
         return;
       }
 
-      // Admin Login Attempt (Only if user login fails)
       const adminResponse = await fetch("http://localhost:5000/api/v1/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -121,7 +118,6 @@ export function LoginForm() {
         return;
       }
 
-      // If both logins fail
       toast({
         title: "Login failed",
         description: userData.message || adminData.message || "Invalid credentials",
