@@ -1,43 +1,30 @@
 const express = require("express");
 const { CertificateController } = require("../../../controller");
-// const { 
-//     createCertificate, 
-//     getCertificate, 
-//     updateCertificate,
-//     deleteCertificate,
-//     getCertificatById,
-//     downloadCertificate
-// } = require("../../../controller");
 
 const router = express.Router();
 
 router.post(
-    "/generateCertificate", 
+    "/generateCertificate",
     CertificateController.createCertificate
 );
-
 router.get(
-    "/getCertificate", 
+    "/getCertificate",
     CertificateController.getCertificate
 );
-
 router.get(
-    "/getCertificateByid/:certificateId", 
+    "/getCertificateByid/:certificateId",
     CertificateController.getCertificatById
 );
-
 router.get(
-    "/download/:certificateId", 
+    "/download/:certificateId",
     CertificateController.downloadCertificate
 );
-
 router.put(
-    "/updateCertificate/:certificateId", 
+    "/updateCertificate/:certificateId",
     CertificateController.updateCertificate
 );
-
 router.delete(
-    "/deleteCertificate/:certificateId", 
+    "/deleteCertificate/:certificateId",
     CertificateController.deleteCertificate
 );
 

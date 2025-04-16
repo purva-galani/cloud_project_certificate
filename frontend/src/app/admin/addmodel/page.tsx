@@ -541,7 +541,7 @@ export default function AddModel() {
                                     <button
                                         type="button"
                                         onClick={handleNewModelAndRange}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                                        className="bg-blue-950 hover:bg-blue-900 text-white p-2 rounded-md w-full"
                                         disabled={loading}
                                     >
                                         {loading ? 'Adding...' : 'Add New Model and Range'}
@@ -596,7 +596,7 @@ export default function AddModel() {
                                     <button
                                         type="button"
                                         onClick={handleAddEngineer}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                                        className="bg-blue-950 hover:bg-blue-900 text-white p-2 rounded-md w-full"
                                         disabled={loading}
                                     >
                                         {loading ? "Adding..." : "Add Engineer"}
@@ -652,7 +652,7 @@ export default function AddModel() {
                                     <button
                                         type="button"
                                         onClick={handleAddServiceEngineer}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+                                        className="bg-blue-950 hover:bg-blue-900 text-white p-2 rounded-md w-full"
                                         disabled={loading}
                                     >
                                         {loading ? "Adding..." : "Add Service Engineer"}

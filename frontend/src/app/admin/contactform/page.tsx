@@ -16,22 +16,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation"
 
 const contactSchema = z.object({
-  firstName: z.string().min(1, { message: "First name is required" }),
-  middleName: z.string().min(1, { message: "Middle name is required" }),
-  lastName: z.string().min(1, { message: "Last name is required" }),
+  firstName: z.string().nonempty({ message: "Required" }),
+  middleName: z.string().nonempty({ message: "Required" }),
+  lastName: z.string().nonempty({ message: "Required" }),
   contactNo: z.string()
     .regex(/^\d*$/, { message: "Contact number must be numeric" })
     .nonempty({ message: "Required" }),
-  email: z.string().email({ message: "mailaddress is required" }),
-  designation: z.string().min(1, { message: "Designation is required" }),
+  email: z.string().email({ message: "Required" }),
+  designation: z.string().nonempty({ message: "Required" }),
 });
 
 export default function Customer() {
   const searchParams = useSearchParams();
   const contactId = searchParams.get("id");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof contactSchema>>({
     resolver: zodResolver(contactSchema),
@@ -86,17 +88,18 @@ export default function Customer() {
       if (contactId) {
         await axios.put(`http://localhost:5000/api/v1/contactperson/updateContactPerson/${contactId}`, values);
         toast({
-          title: "Update Successful!",
-          description: "Contact updated successfully!",
+          title: "Contact Updated",
+          description: "The contact has been successfully updated",
         });
       } else {
         await axios.post("http://localhost:5000/api/v1/contactperson/generateContactPerson", values);
         toast({
-          title: "Create Successful!",
-          description: "Contact created successfully!",
+          title: "Contact Submitted",
+          description: "The contact has been successfully created",
         });
         form.reset();
       }
+      router.push("/admin/contactrecord");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -207,14 +210,14 @@ export default function Customer() {
                       render={({ field }) => (
                         <FormItem>
                           <FormControl>
-                          <Input
-                            placeholder="Contact Number"
-                            type="tel"
-                            {...field}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/[^0-9]/g, '');
-                              field.onChange(value);
-                            }}
+                            <Input
+                              placeholder="Contact Number"
+                              {...field}
+                              disabled={isSubmitting}
+                              onChange={(e) => {
+                                const numericValue = e.target.value.replace(/\D/g, '');
+                                field.onChange(numericValue);
+                              }}
                             />
                           </FormControl>
                           <FormMessage />

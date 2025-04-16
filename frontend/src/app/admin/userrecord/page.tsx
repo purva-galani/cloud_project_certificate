@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from 'next/navigation';
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Loader2, SearchIcon, Edit2Icon, DeleteIcon, FileDown } from "lucide-react";
+import {  SearchIcon,  Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 
@@ -28,10 +28,9 @@ interface User {
 }
 
 const columns = [
-  { name: "NAME", uid: "name", sortable: true, width: "120px" },
-  { name: "EMAIL", uid: "email", sortable: true, width: "120px" },
-  { name: "CONTACT", uid: "contact", sortable: true, width: "120px" },
-
+  { name: "User Name", uid: "name", sortable: true, width: "120px" },
+  { name: "Email Address", uid: "email", sortable: true, width: "120px" },
+  { name: "Contact Number", uid: "contact", sortable: true, width: "120px" },
   { name: "ACTIONS", uid: "actions", sortable: false, width: "100px" },
 ];
 
@@ -72,17 +71,9 @@ export default function UserTable() {
       });
       if (response.ok) {
         setUsers(prev => prev.filter(user => user._id !== id));
-        toast({
-          title: "Delete Successful!",
-          description: "User deleted successfully!",
-        })
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete user.",
-        variant: "destructive",
-      })
+      console.error("Failed to delete user", error);
     }
   };
 
@@ -139,53 +130,53 @@ export default function UserTable() {
 
   const topContent = React.useMemo(() => {
     return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[80%]"
-            placeholder="Search by name..."
-            startContent={<SearchIcon className="h-4 w-10 text-muted-foreground" />}
-            value={filterValue}
-            onChange={(e) => setFilterValue(e.target.value)}
-            onClear={() => setFilterValue("")}
-          />
-        </div>
-        <div className="flex justify-between items-center">
-          <span className="text-default-400 text-small">Total {users.length} users</span>
-          <label className="flex items-center text-default-400 text-small">
-            Rows per page:
-            <select
-              className="bg-transparent dark:bg-gray-800 outline-none text-default-400 text-small"
-              onChange={onRowsPerPageChange}
-              defaultValue="15"
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-            </select>
-          </label>
-        </div>
+      <div className="flex justify-between items-center gap-4">
+        <Input
+          isClearable
+          className="w-full max-w-[300px]"
+          placeholder="Search"
+          startContent={<SearchIcon className="h-4 w-5 text-muted-foreground" />}
+          value={filterValue}
+          onChange={(e) => setFilterValue(e.target.value)}
+          onClear={() => setFilterValue("")}
+        />
+        <label className="flex items-center text-default-400 text-small">
+          Rows per page:
+          <select
+            className="bg-transparent dark:bg-gray-800 outline-none text-default-400 text-small ml-2"
+            onChange={onRowsPerPageChange}
+            defaultValue="5"
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+          </select>
+        </label>
       </div>
     );
   }, [filterValue, onRowsPerPageChange, users.length]);
 
   const bottomContent = React.useMemo(() => {
     return (
-      <div className="py-2 px-2 flex justify-between items-center">
-        <span className="w-[30%] text-small text-default-400"></span>
-        <Pagination
-          isCompact
-          showShadow
-          color="success"
-          page={page}
-          total={pages}
-          onChange={setPage}
-          classNames={{
-            cursor: "bg-[hsl(339.92deg_91.04%_52.35%)] shadow-md",
-            item: "data-[active=true]:bg-[hsl(339.92deg_91.04%_52.35%)] data-[active=true]:text-white rounded-lg",
-          }}
-        />
+      <div className="py-2 px-2 relative flex justify-between items-center">
+        <span className="text-default-400 text-small">
+          Total {users.length} users
+        </span>
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <Pagination
+            isCompact
+            showShadow
+            color="success"
+            page={page}
+            total={pages}
+            onChange={setPage}
+            classNames={{
+              cursor: "bg-[hsl(339.92deg_91.04%_52.35%)] shadow-md",
+              item: "data-[active=true]:bg-[hsl(339.92deg_91.04%_52.35%)] data-[active=true]:text-white rounded-lg",
+            }}
+          />
+        </div>
+
         <div className="rounded-lg bg-default-100 hover:bg-default-200 hidden sm:flex w-[30%] justify-end gap-2">
           <Button
             className="bg-[hsl(339.92deg_91.04%_52.35%)]"
@@ -208,7 +199,7 @@ export default function UserTable() {
         </div>
       </div>
     );
-  }, [page, pages, onPreviousPage, onNextPage]);
+  }, [page, pages, onPreviousPage, onNextPage, users.length]);
 
   const renderCell = useCallback((user: User, columnKey: string) => {
     if (columnKey === "actions") {
@@ -224,7 +215,7 @@ export default function UserTable() {
                 handleDelete(user._id);
               }}
             >
-              <DeleteIcon className="h-6 w-6" />
+              <Trash2 className="h-6 w-6" />
             </span>
           </Tooltip>
         </div>
@@ -265,45 +256,43 @@ export default function UserTable() {
               <CardTitle className="text-3xl font-bold text-center">User Record</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8 pt-15 max-h-screen-xl max-w-screen-xl">
-                <Table
-                  isHeaderSticky
-                  aria-label="Users table with custom cells, pagination and sorting"
-                  bottomContent={bottomContent}
-                  bottomContentPlacement="outside"
-                  classNames={{
-                    wrapper: "max-h-[382px] overflow-y-auto",
-                  }}
-                  sortDescriptor={sortDescriptor}
-                  topContent={topContent}
-                  topContentPlacement="outside"
-                  onSortChange={(descriptor) => {
-                    setSortDescriptor({
-                      column: descriptor.column as string,
-                      direction: descriptor.direction as "ascending" | "descending",
-                    });
-                  }}
-                >
-                  <TableHeader columns={headerColumns}>
-                    {(column) => (
-                      <TableColumn
-                        key={column.uid}
-                        align={column.uid === "actions" ? "center" : "start"}
-                        allowsSorting={column.sortable}
-                      >
-                        {column.name}
-                      </TableColumn>
-                    )}
-                  </TableHeader>
-                  <TableBody emptyContent={"No users found"} items={paginatedItems}>
-                    {(item) => (
-                      <TableRow key={item._id}>
-                        {(columnKey) => <TableCell style={{ fontSize: "12px", padding: "8px" }}>{renderCell(item, columnKey as string)}</TableCell>}
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+              <Table
+                isHeaderSticky
+                aria-label="Users table with custom cells, pagination and sorting"
+                bottomContent={bottomContent}
+                bottomContentPlacement="outside"
+                classNames={{
+                  wrapper: "max-h-[382px] overflow-y-auto",
+                }}
+                sortDescriptor={sortDescriptor}
+                topContent={topContent}
+                topContentPlacement="outside"
+                onSortChange={(descriptor) => {
+                  setSortDescriptor({
+                    column: descriptor.column as string,
+                    direction: descriptor.direction as "ascending" | "descending",
+                  });
+                }}
+              >
+                <TableHeader columns={headerColumns}>
+                  {(column) => (
+                    <TableColumn
+                      key={column.uid}
+                      align={column.uid === "actions" ? "center" : "start"}
+                      allowsSorting={column.sortable}
+                    >
+                      {column.name}
+                    </TableColumn>
+                  )}
+                </TableHeader>
+                <TableBody emptyContent={"Create user and add data"} items={paginatedItems}>
+                  {(item) => (
+                    <TableRow key={item._id}>
+                      {(columnKey) => <TableCell style={{ fontSize: "12px", padding: "8px" }}>{renderCell(item, columnKey as string)}</TableCell>}
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </div>

@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-
 const companySchema = new mongoose.Schema({
     companyName: { type: String, required: true },
     address: { type: String, required: true },
@@ -13,6 +12,6 @@ const companySchema = new mongoose.Schema({
     timestamps: true
 });
 
-const Company = mongoose.model("CompanyDetails",companySchema)
+const Company = mongoose.model("CompanyDetails", companySchema)
 
 module.exports = Company

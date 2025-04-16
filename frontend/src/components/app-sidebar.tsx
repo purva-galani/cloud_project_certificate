@@ -3,18 +3,15 @@ import * as React from "react"
 import { usePathname } from "next/navigation"
 import { NavUser } from "@/components/nav-user"
 import { NavMain } from "@/components/nav-main"
-import { CirclePlay, File, InfoIcon } from "lucide-react"
+import { Building2, Files, LayoutDashboard } from "lucide-react"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarRail } from "@/components/ui/sidebar"
 
-const data = {}
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname()
-  const navMain = React.useMemo(
-    () => [
+const data = {
+ navMain : [
       {
         title: "Dashboard",
         url: "#",
-        icon: CirclePlay,
+        icon: LayoutDashboard,
         items: [
           {
             title: "Dashboard",
@@ -23,9 +20,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ],
       },
       {
-        title: "Company Details",
+        title: "Company Info",
         url: "#",
-        icon: InfoIcon,
+        icon: Building2,
         items: [
           {
             title: "Create Company",
@@ -48,7 +45,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         title: "Documentation",
         url: "#",
-        icon: File,
+        icon: Files,
         items: [
           {
             title: "Create Certificate",
@@ -69,16 +66,46 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ],
       },
     ],
-    [pathname],
-  )
+  };
 
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+ const [isClient, setIsClient] = React.useState(false);
+  const [activePath, setActivePath] = React.useState("");
+  const sidebarRef = React.useRef<HTMLDivElement>(null);
+  const [isCollapsed, setIsCollapsed] = React.useState(false);
+
+  React.useEffect(() => {
+      if (!sidebarRef.current) return;
+      const observer = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const width = entry.contentRect.width;
+          setIsCollapsed(width < 80); 
+        }
+      });
+      observer.observe(sidebarRef.current);
+      return () => observer.disconnect();
+    }, []);
+  
+    const updatedNavMain = React.useMemo(
+      () =>
+        data.navMain.map((item) => ({
+          ...item,
+          isActive: isClient && activePath === item.url,
+          items: item.items?.map((subItem) => ({
+            ...subItem,
+            isActive: isClient && activePath === subItem.url,
+          })),
+        })),
+      [isClient, activePath]
+    );
+  
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent>
-        <NavMain items={navMain} />
+        <NavMain items={updatedNavMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser  />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

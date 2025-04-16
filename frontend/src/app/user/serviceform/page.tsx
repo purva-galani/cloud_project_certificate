@@ -13,13 +13,13 @@ import Serviceform from "@/app/user/serviceform/form"
 export default function CertificatePage() {
     return (
         <SidebarProvider>
-            <AppSidebar/>
+            <AppSidebar />
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
                     <div className="flex items-center gap-2 px-4">
-                        <SidebarTrigger className="-ml-1"/>
-                        <ModeToggle/>
-                        <Separator orientation="vertical" className="mr-2 h-4"/>
+                        <SidebarTrigger className="-ml-1" />
+                        <ModeToggle />
+                        <Separator orientation="vertical" className="mr-2 h-4" />
                         <Breadcrumb>
                             <BreadcrumbList>
                                 <BreadcrumbItem className="hidden md:block">
@@ -27,9 +27,9 @@ export default function CertificatePage() {
                                         Dashboard
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
-                                <BreadcrumbSeparator className="hidden md:block"/>
+                                <BreadcrumbSeparator className="hidden md:block" />
                                 <BreadcrumbItem>
-                                <BreadcrumbLink href="/user/servicerecord">
+                                    <BreadcrumbLink href="/user/servicerecord">
                                         Service Record
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
@@ -42,7 +42,7 @@ export default function CertificatePage() {
                         <CardHeader>
                             <CardTitle className="text-3xl font-bold text-center">Create Service</CardTitle>
                             <CardDescription className="text-center">
-                                Please fill out the form below to generate a new Service
+                                Fill out the form below to create a new service
                             </CardDescription>
                         </CardHeader>
                         <CardContent>

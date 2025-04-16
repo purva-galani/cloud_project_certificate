@@ -42,7 +42,7 @@ export default function CertificatePage() {
                         <CardHeader>
                             <CardTitle className="text-3xl font-bold text-center">Create Certificate</CardTitle>
                             <CardDescription className="text-center">
-                                Please fill out the form below to generate a new Certificate
+                                Fill out the form below to create a new certificate
                             </CardDescription>
                         </CardHeader>
                         <CardContent>

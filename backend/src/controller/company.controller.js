@@ -1,10 +1,8 @@
-const Company = require("../model/company.model"); 
-
+const Company = require("../model/company.model");
 
 const createCompany = async (req, res) => {
   try {
     const { companyName, address, gstNumber, industries, website, industriesType, flag } = req.body;
-
     const newCompany = new Company({
       companyName,
       address,
@@ -14,7 +12,6 @@ const createCompany = async (req, res) => {
       industriesType,
       flag,
     });
-
     const savedCompany = await newCompany.save();
     res.status(201).json({ message: "Company details added successfully", data: savedCompany });
   } catch (err) {
@@ -22,21 +19,20 @@ const createCompany = async (req, res) => {
   }
 };
 
-// Get all companies
 const getAllCompanies = async (req, res) => {
   try {
     const company = await Company.find({})
     res.status(200).json({
-        success: true,
-        data: company
+      success: true,
+      data: company
     })
-} catch (error) {
+  } catch (error) {
     console.error("Error fetching Certificates:", error);
     res.status(500).json({
-        success: false,
-        message: "Internal server error: " + error.message,
+      success: false,
+      message: "Internal server error: " + error.message,
     });
-}
+  }
 };
 
 const getCompanyById = async (req, res) => {
@@ -52,11 +48,9 @@ const getCompanyById = async (req, res) => {
   }
 };
 
-// Update company details
 const updateCompany = async (req, res) => {
   const { id } = req.params;
   const { companyName, address, gstNumber, industries, website, industriesType, flag } = req.body;
-
   try {
     const updatedCompany = await Company.findByIdAndUpdate(id, {
       companyName,
@@ -67,18 +61,15 @@ const updateCompany = async (req, res) => {
       industriesType,
       flag,
     }, { new: true });
-
     if (!updatedCompany) {
       return res.status(404).json({ message: "Company not found" });
     }
-
     res.status(200).json({ message: "Company updated successfully", data: updatedCompany });
   } catch (err) {
     res.status(500).json({ message: "Failed to update company", error: err.message });
   }
 };
 
-// Delete a company
 const deleteCompany = async (req, res) => {
   const { id } = req.params;
   try {

@@ -1,7 +1,7 @@
-const Certificate = require("../model/certificateModel");
-const generatePDF = require("../utils/pdfGenerator");
-const path = require("path");
 const fs = require("fs");
+const path = require("path");
+const generatePDF = require("../utils/pdfGenerator");
+const Certificate = require("../model/certificateModel");
 
 const getCertificate = async (req, res) => {
     try {
@@ -59,15 +59,12 @@ const createCertificate = async (req, res) => {
             engineerName,
             status
         } = req.body;
-
-        // Validate required fields
         if (!customerName || !siteLocation || !makeModel || !range || !serialNo ||
             !calibrationGas || !gasCanisterDetails || !dateOfCalibration ||
             !calibrationDueDate || !observations || observations.length === 0 || !engineerName || !status) {
             console.error("Missing required fields");
             return res.status(400).json({ error: "All fields and at least one observation are required" });
         }
-
         const newCertificate = new Certificate({
             customerName,
             siteLocation,
@@ -82,11 +79,9 @@ const createCertificate = async (req, res) => {
             engineerName,
             status
         });
-
         console.log("Saving certificate to database...");
         await newCertificate.save();
         console.log("Certificate saved successfully");
-
         console.log("Generating PDF...");
         const pdfPath = await generatePDF(
             newCertificate.certificateNo,
@@ -105,7 +100,6 @@ const createCertificate = async (req, res) => {
             status
         );
         console.log("PDF generated successfully at:", pdfPath);
-
         res.status(201).json({
             message: "Certificate generated successfully!",
             certificateId: newCertificate.certificateId,
@@ -122,22 +116,15 @@ const downloadCertificate = async (req, res) => {
     try {
         console.log("Received request params:", req.params);
         const { certificateId } = req.params;
-
-        // Find certificate by certificateId field, not _id
         const certificate = await Certificate.findOne({ certificateId: certificateId });
         if (!certificate) {
             console.error(`Certificate not found in database: ${certificateId}`);
             return res.status(404).json({ error: "Certificate not found in database" });
         }
-
-        // Check if the PDF exists
         const pdfPath = path.join(process.cwd(), "certificates", `${certificateId}.pdf`);
         console.log("Looking for PDF at path:", pdfPath);
-
         if (!fs.existsSync(pdfPath)) {
             console.error(`Certificate file not found at path: ${pdfPath}`);
-            
-            // Try to regenerate the PDF
             console.log("Attempting to regenerate PDF...");
             try {
                 await generatePDF(
@@ -151,7 +138,7 @@ const downloadCertificate = async (req, res) => {
                     certificate.gasCanisterDetails,
                     certificate.dateOfCalibration,
                     certificate.calibrationDueDate,
-                    certificate.certificateId,  // Use certificateId from the certificate
+                    certificate.certificateId,
                     certificate.observations,
                     certificate.engineerName,
                     certificate.status
@@ -161,17 +148,13 @@ const downloadCertificate = async (req, res) => {
                 console.error("Failed to regenerate PDF:", regenerateError);
                 return res.status(500).json({ error: "Failed to regenerate certificate PDF" });
             }
-
-            // Check again if the file exists after regeneration
             if (!fs.existsSync(pdfPath)) {
                 return res.status(404).json({ error: "Certificate file could not be generated" });
             }
         }
-
         console.log("Setting response headers...");
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename=certificate-${certificate.certificateNo}.pdf`);
-
         console.log("Creating read stream...");
         const stream = fs.createReadStream(pdfPath);
         stream.on('error', function (error) {
@@ -179,7 +162,6 @@ const downloadCertificate = async (req, res) => {
             console.error("Error stack:", error.stack);
             res.status(500).json({ error: "Failed to download certificate: " + error.message });
         });
-
         console.log("Piping stream to response...");
         stream.pipe(res);
     } catch (error) {
@@ -193,20 +175,17 @@ const updateCertificate = async (req, res) => {
     try {
         const { certificateId } = req.params;
         const updateData = req.body;
-        
         const certificate = await Certificate.findByIdAndUpdate(
             certificateId,
             updateData,
             { new: true }
         );
-
         if (!certificate) {
             return res.status(404).json({
                 success: false,
                 message: "Certificate not found"
             });
         }
-
         res.status(200).json({
             success: true,
             data: certificate,
@@ -223,16 +202,13 @@ const updateCertificate = async (req, res) => {
 const deleteCertificate = async (req, res) => {
     try {
         const { certificateId } = req.params;
-        
         const certificate = await Certificate.findByIdAndDelete(certificateId);
-
         if (!certificate) {
             return res.status(404).json({
                 success: false,
                 message: "Certificate not found"
             });
         }
-
         res.status(200).json({
             success: true,
             message: "Certificate deleted successfully"

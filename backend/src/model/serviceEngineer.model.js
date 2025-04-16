@@ -4,6 +4,6 @@ const engineerSchema = new mongoose.Schema({
     name: { type: String, required: true }
 });
 
-const ServiceEngineer = mongoose.model('ServiceEngineer', engineerSchema);  
+const ServiceEngineer = mongoose.model('ServiceEngineer', engineerSchema);
 
 module.exports = ServiceEngineer;

@@ -260,7 +260,7 @@ export function NavUser() {
                     <FormItem>
                       <FormLabel>User Name</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Enter your name"/>
+                        <Input {...field} placeholder="Enter your name" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -273,7 +273,7 @@ export function NavUser() {
                     <FormItem>
                       <FormLabel>Email Address</FormLabel>
                       <FormControl>
-                        <Input type="email" {...field} readOnly/>
+                        <Input type="email" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -286,7 +286,7 @@ export function NavUser() {
                     <FormItem>
                       <FormLabel>Contact Number</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} placeholder="Enter your contact number"/>
+                        <Input type="number" {...field} placeholder="Enter your contact number" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

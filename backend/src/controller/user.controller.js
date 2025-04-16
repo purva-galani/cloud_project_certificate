@@ -1,14 +1,13 @@
 const bcrypt = require('bcryptjs');
-const Admin = require('../model/admin.model');
-const Users = require('../model/user.model');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
+const Users = require('../model/user.model');
+const Admin = require('../model/admin.model');
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
-
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -16,36 +15,28 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
-
 let loggedInUsersCount = 0;
 const MAX_LOGINS = 10;
-
 
 const register = async (req, res) => {
   try {
     const { name, email, password, contact } = req.body;
-
     const userCount = await Users.countDocuments();
     if (userCount >= MAX_LOGINS) {
       return res.status(403).json({ message: 'Registration limit reached. Please try again later.' });
     }
-
     const existingUser = await Users.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'Email already in use' });
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const user = new Users({
       name,
       email,
       password: hashedPassword,
       contact,
     });
-
     await user.save();
-
     console.log('User registered:', user);
     res.status(201).json({ message: 'User registered successfully!' });
   } catch (error) {
@@ -54,11 +45,9 @@ const register = async (req, res) => {
   }
 };
 
-
-// Assuming you have the necessary imports
 const getUsers = async (req, res) => {
   try {
-    const users = await Users.find().select('-password -refreshToken'); // Exclude sensitive fields
+    const users = await Users.find().select('-password -refreshToken');
     res.status(200).json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -69,8 +58,6 @@ const getUsers = async (req, res) => {
     });
   }
 };
-
-
 
 const getUserById = async (req, res) => {
   try {
@@ -92,23 +79,16 @@ const getUserById = async (req, res) => {
   }
 };
 
-
-
-
-// Delete user by ID
 const deleteUser = async (req, res) => {
   const { id } = req.params;
-
   try {
     const deletedAccount = await Users.findByIdAndDelete(id);
-
     if (!deletedAccount) {
       return res.status(404).json({
         success: false,
         message: "Account not found"
       });
     }
-
     res.status(200).json({
       success: true,
       message: "Account deleted successfully",
@@ -125,21 +105,16 @@ const deleteUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
-
   try {
     const user = await Users.findById(id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
-    // Update fields if they exist in the request body
     if (req.body.name) user.name = req.body.name;
     if (req.body.email) user.email = req.body.email;
     if (req.body.contact) user.contact = req.body.contact;
-    if (req.body.password) user.password = req.body.password; // Only if you want to allow password updates
-
+    if (req.body.password) user.password = req.body.password;
     await user.save();
-
     res.status(200).json({
       message: 'User updated successfully',
       user: {
@@ -157,43 +132,31 @@ const updateUser = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-
-  // Validate input
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
   }
-
   try {
     const normalizedEmail = email.toLowerCase();
     const user = await Users.findOne({ email: normalizedEmail });
-
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
-    // Token generation with expiration
     const accessToken = jwt.sign(
-      { userId: user._id , role: 'user' },
+      { userId: user._id, role: 'user' },
       process.env.JWT_SECRET || "randome#certificate",
-      { expiresIn: '1h' } // Token expires in 1 hour
+      { expiresIn: '1h' }
     );
-
     const refreshToken = jwt.sign(
       { userId: user._id },
       process.env.JWT_REFRESH_SECRET || "refresh#secret",
-      { expiresIn: '7d' } // Refresh token expires in 7 days
+      { expiresIn: '7d' }
     );
-
-    // Store refresh token
     user.refreshToken = refreshToken;
     await user.save();
-
-    // Return tokens and user data (excluding sensitive info)
     res.json({
       accessToken,
       refreshToken,
@@ -204,78 +167,61 @@ const login = async (req, res) => {
         contact: user.contact
       }
     });
-
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-
 const refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
-
   if (!refreshToken) {
     return res.status(401).json({ error: 'Refresh token required' });
   }
-
   try {
     const decoded = jwt.verify(
       refreshToken,
       process.env.JWT_REFRESH_SECRET || "refresh#secret"
     );
-
     const user = await Users.findOne({
       _id: decoded.userId,
       refreshToken
     });
-
     if (!user) {
       return res.status(401).json({ error: 'Invalid refresh token' });
     }
-
-    // Generate new access token
     const newAccessToken = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET || "randome#certificate",
       { expiresIn: '1h' }
     );
-
     res.json({ accessToken: newAccessToken });
   } catch (error) {
     console.error('Refresh token error:', error);
     res.status(401).json({ error: 'Invalid refresh token' });
   }
 };
+
 const logout = async (req, res) => {
   const { token } = req.body;
-
   const user = await Users.findOne({ refreshToken: token });
   if (!user) return res.sendStatus(404);
-
   user.refreshToken = null;
   await user.save();
-
   loggedInUsersCount--;
-
   res.sendStatus(204);
 };
 
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
-
   try {
-    // Check both User and Admin collections
     const user = await Users.findOne({ email }) || await Admin.findOne({ email });
-
     if (user) {
       const token = createToken(user._id, { expiresIn: '1h' });
       user.resetPasswordToken = token;
       user.resetPasswordExpires = Date.now() + 3600000;
       await user.save();
-
       const resetLink = `http://localhost:3000/Resetpassword/${token}?email=${encodeURIComponent(user.email)}`;
-
       await transporter.sendMail({
         from: process.env.EMAIL_FROM,
         to: email,
@@ -283,13 +229,10 @@ const forgotPassword = async (req, res) => {
         html: generateResetEmailHtml(user.name, resetLink)
       });
     }
-
-    // Return same response whether user exists or not (security best practice)
     res.json({
       success: true,
       message: "If an account exists with this email, you'll receive a password reset link."
     });
-
   } catch (error) {
     console.error("Forgot Password Error:", error);
     res.status(500).json({
@@ -299,7 +242,6 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-// Helper function for email template
 const generateResetEmailHtml = (name, resetLink) => {
   return `
     <!DOCTYPE html>
@@ -366,9 +308,7 @@ const generateResetEmailHtml = (name, resetLink) => {
                         <h4>Hello ${name},</h4>
                         <hr> <!-- Visual separation -->
                         <p>We received a request to reset your password for your  account. If you made this request, you can reset your password by clicking the button below.</p>
-                        
                         <p><strong>This link can be used only once and will expire in 1 hour.</strong></p>
-
                         <div >
                             <p><a href="${resetLink}"     
                             style =                         
@@ -380,13 +320,10 @@ const generateResetEmailHtml = (name, resetLink) => {
                             font-weight: bold;
                             display: inline-block;">Reset Password</a></p>
                         </div>
-
-                        <p>If you didn’t request this, ignore this email, and your account will remain secure.</p>
-                        
-                        <p>Need help? Contact us at <a href="mailto:support@crmteam.com">support@crmteam.com</a>.</p>
-
+                        <p>If you didn’t request this, ignore this email, and your account will remain secure.</p>                       
+                        <p>Need help? Contact us at <a href="mailto:support@crmteam.com">info@spriertechnology.com</a></p>
                         <div class="footer">
-                            <p>Best regards,<br><strong>The CRM Team</strong></p>
+                            <p>Best regards,<br><strong>Spriers Private Limited</strong></p>
                         </div>
                     </div>
                 </body>
@@ -397,33 +334,26 @@ const generateResetEmailHtml = (name, resetLink) => {
 const resetPassword = async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // Check both collections for the user
     let user = await Users.findById(decoded.id);
     if (!user) {
       user = await Admin.findById(decoded.id);
     }
-
     if (!user) {
       return res.status(400).json({ success: false, message: "Invalid or expired token" });
     }
-
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();
-
-    return res.json({ 
-      success: true, 
-      message: "Password reset successfully", 
+    return res.json({
+      success: true,
+      message: "Password reset successfully",
       email: user.email,
-      userType: user instanceof Users ? 'user' : 'admin' // Indicate which type of user was reset
+      userType: user instanceof Users ? 'user' : 'admin'
     });
-
   } catch (error) {
     console.error("Reset Password Error:", error);
     return res.status(500).json({ success: false, message: "Server error" });
